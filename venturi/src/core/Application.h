@@ -10,7 +10,7 @@
 #include "imgui.h"
 #include "implot.h"
 #include "vulkan/vulkan.h"
-#include "Walnut/Image.h"
+#include "Image.h"
 
 void check_vk_result(VkResult err);
 

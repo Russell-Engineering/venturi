@@ -15,11 +15,12 @@ project "Venturi"
     {  
         "src",
         "src/core",
+        "src/venturi",
         "../vendor/imgui",
         "../vendor/implot",
         "../vendor/glfw/include",
         "../vendor/glm",
-        "../vendor/stb_image",
+        "../vendor/stb",
         "C:/VulkanSDK/1.3.216.0/Include",
     }
     links

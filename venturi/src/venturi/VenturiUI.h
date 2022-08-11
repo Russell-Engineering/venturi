@@ -2,9 +2,9 @@
 
 #include <memory>
 
-#include "Walnut/Application.h"
-#include "Walnut/Layer.h"
-#include "Walnut/Image.h"
+#include "Application.h"
+#include "Layer.h"
+#include "Image.h"
 
 
 class VenturiUI : public Walnut::Layer

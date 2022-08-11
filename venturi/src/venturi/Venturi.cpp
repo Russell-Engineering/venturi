@@ -1,8 +1,9 @@
-#include "Walnut/Application.h"
-#include "Walnut/EntryPoint.h"
+
+#include "Application.h"
+#include "EntryPoint.h"
 
 
-#include "Venturi/VenturiUI.h"
+#include "VenturiUI.h"
 
 
 

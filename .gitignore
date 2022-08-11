@@ -107,7 +107,7 @@ obj/
 # venturi 
 vendor/*/bin
 vendor/*/bin-int
-vendor/*/Makefile
+vendor/implot/Makefile
 
 venturi/bin
 venturi/build
