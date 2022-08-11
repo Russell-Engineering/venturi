@@ -21,6 +21,7 @@ project "Venturi"
         "../vendor/glfw/include",
         "../vendor/glm",
         "../vendor/stb",
+        "../vendor/spdlog/include",
         "C:/VulkanSDK/1.3.216.0/Include",
     }
     links
