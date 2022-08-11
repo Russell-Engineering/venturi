@@ -22,7 +22,7 @@
 
 void VenturiUI::OnAttach()
 {
-	m_Image = std::make_shared<Walnut::Image>("Venturi/assets/venturi-logo.png");
+	m_Image = std::make_shared<Walnut::Image>("venturi/assets/venturi-logo.png");
 	SetDarkThemeColors();
 }
 
