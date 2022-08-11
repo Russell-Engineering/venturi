@@ -1,0 +1,13 @@
+[submodule "vendor/glfw"]
+	path = vendor/glfw
+	url = https://github.com/TheCherno/glfw
+[submodule "vendor/imgui"]
+	path = vendor/imgui
+	url = https://github.com/TheCherno/imgui
+	branch = docking
+[submodule "vendor/implot"]
+	path = vendor/implot
+	url = https://github.com/epezent/implot
+[submodule "vendor/stb"]
+	path = vendor/stb
+	url = https://github.com/nothings/stb
