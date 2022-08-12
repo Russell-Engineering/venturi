@@ -1,12 +1,12 @@
 -- premake5.lua
 
-workspace "Venturi"
+workspace "venturi"
     architecture "x64"
     configurations { "Debug", "Release", "Dist" }
+    startproject "venturi"
     
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 VULKAN_SDK = os.getenv("VULKAN_SDK")
 
-include "wiExternal.lua"
-include "Oak"
-include "Venturi"
+include "oak/oakExternal.lua"
+include "venturi"

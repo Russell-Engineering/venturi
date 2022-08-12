@@ -1,37 +1,26 @@
-project "Venturi"
+project "venturi"
     kind "ConsoleApp"
     language "C++"
     cppdialect "C++17"
+   
+   
     files 
     { 
-        "src/venturi/**.h", 
-        "src/venturi/**.cpp",
-        "src/core/**.h", 
-        "src/core/**.cpp", 
-        "src/imgui/**.cpp"
+        "src/**.h", 
+        "src/**.cpp",
     }
     
     includedirs
     {  
-        "src",
-        "src/core",
-        "src/venturi",
-        "oak/vendor/imgui",
-        "oak/vendor/implot",
-        "oak/vendor/glfw/include",
-        "oak/vendor/glm",
-        "oak/vendor/stb",
-        "oak/vendor/spdlog/include",
-        "C:/VulkanSDK/1.3.216.0/Include",
+        "../oak/vendor/imgui",
+        "../oak/vendor/glfw/include",
+        "../oak/oak/src",
+
+        "%{IncludeDir.VulkanSDK}",
     }
     links
     {
-        -- "GLFW",
-        -- "gdi32",
-        -- "Dwmapi",
-
-        -- "ImPlot",
-        "Oak",
+        "oak",
         "C:/VulkanSDK/1.3.216.0/Lib/vulkan-1",
     }
     
