@@ -7,7 +7,7 @@
 	branch = docking
 [submodule "vendor/implot"]
 	path = vendor/implot
-	url = https://github.com/epezent/implot
+	url = https://github.com/csooriyakumaran/implot
 [submodule "vendor/stb"]
 	path = vendor/stb
 	url = https://github.com/nothings/stb
