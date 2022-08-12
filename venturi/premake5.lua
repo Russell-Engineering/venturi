@@ -16,22 +16,22 @@ project "Venturi"
         "src",
         "src/core",
         "src/venturi",
-        "../vendor/imgui",
-        "../vendor/implot",
-        "../vendor/glfw/include",
-        "../vendor/glm",
-        "../vendor/stb",
-        "../vendor/spdlog/include",
+        "oak/vendor/imgui",
+        "oak/vendor/implot",
+        "oak/vendor/glfw/include",
+        "oak/vendor/glm",
+        "oak/vendor/stb",
+        "oak/vendor/spdlog/include",
         "C:/VulkanSDK/1.3.216.0/Include",
     }
     links
     {
-        "GLFW",
-        "gdi32",
-        "Dwmapi",
+        -- "GLFW",
+        -- "gdi32",
+        -- "Dwmapi",
 
-        "ImPlot",
-
+        -- "ImPlot",
+        "Oak",
         "C:/VulkanSDK/1.3.216.0/Lib/vulkan-1",
     }
     
