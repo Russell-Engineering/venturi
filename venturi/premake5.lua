@@ -12,15 +12,18 @@ project "venturi"
     
     includedirs
     {  
+        "../oak/oak/src",
         "../oak/vendor/imgui",
         "../oak/vendor/glfw/include",
-        "../oak/oak/src",
-
+        "../oak/vendor/glm",
+    
         "%{IncludeDir.VulkanSDK}",
     }
     links
     {
         "oak",
+        "Dwmapi",
+        "gdi32",
         "C:/VulkanSDK/1.3.216.0/Lib/vulkan-1",
     }
     
