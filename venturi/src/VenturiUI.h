@@ -2,12 +2,12 @@
 
 #include <memory>
 
-#include "Application.h"
-#include "Layer.h"
-#include "Image.h"
+#include "oak/core/Application.h"
+#include "oak/core/Layer.h"
+// #include "oak/core/Image.h"
 
 
-class VenturiUI : public Walnut::Layer
+class VenturiUI : public Oak::Layer
 {
 
 public:
@@ -18,6 +18,6 @@ public:
     void SetDarkThemeColors();
 
 private:
-    std::shared_ptr<Walnut::Image> m_Image;
+    // std::shared_ptr<Oak::Image> m_Image;
 
 };

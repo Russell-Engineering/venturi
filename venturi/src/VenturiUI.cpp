@@ -1,13 +1,13 @@
 #include "imGui.h"
 #include "implot.h"
-#include "Venturi/VenturiUI.h"
+#include "VenturiUI.h"
 
 
 
  void VenturiUI :: OnUIRender()
 {	
 	ImGui::Begin("Output");
-	ImGui::Image(m_Image->GetDescriptorSet(), {(float)m_Image->GetWidth(), (float)m_Image->GetHeight()});
+	// ImGui::Image(m_Image->GetDescriptorSet(), {(float)m_Image->GetWidth(), (float)m_Image->GetHeight()});
 	ImGui::End();
 	static ImGuiWindowFlags flags = ImGuiWindowFlags_NoDecoration;
 	ImGui::Begin("Navigation",NULL, ImGuiWindowFlags_NoTitleBar);
@@ -22,7 +22,7 @@
 
 void VenturiUI::OnAttach()
 {
-	m_Image = std::make_shared<Walnut::Image>("venturi/assets/venturi-logo.png");
+	// m_Image = std::make_shared<Oak::Image>("venturi/assets/venturi-logo.png");
 	SetDarkThemeColors();
 }
 
@@ -58,3 +58,17 @@ void VenturiUI::SetDarkThemeColors()
 	colors[ImGuiCol_TitleBgActive] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
 	colors[ImGuiCol_TitleBgCollapsed] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
 }
+
+	// 	if (ImGui::BeginMenu("File"))
+	// 	{	
+	// 		if (ImGui::MenuItem("Exit"))
+	// 		{
+	// 			app->Close();
+	// 		}
+	// 		ImGui::EndMenu();
+	// 	}
+
+	// 	if (ImGui::BeginMenu("Tools"))
+	// 	{
+	// 		ImGui::EndMenu();
+	// 	}
