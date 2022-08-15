@@ -1,10 +1,10 @@
-[01:20:07] [trace] APP: Testing OAK_TRACE
-[01:20:07] [info] APP: Testing OAK_INFO
-[01:20:07] [warning] APP: Testing OAK_WARN
-[01:20:07] [error] APP: Testing OAK_ERROR
-[01:20:07] [critical] APP: Testing OAK_CRITICAL
-[01:20:07] [info] OAK: Creating window WI Venturi (1600, 900)
-[01:20:08] [info] OAK: OpenGL Info:
-[01:20:08] [info] OAK:   Vendor: NVIDIA Corporation
-[01:20:08] [info] OAK:   Renderer: NVIDIA GeForce GTX 970/PCIe/SSE2
-[01:20:08] [info] OAK:   Version: 4.6.0 NVIDIA 512.15
+[01:46:26] [trace] APP: Testing OAK_TRACE
+[01:46:26] [info] APP: Testing OAK_INFO
+[01:46:26] [warning] APP: Testing OAK_WARN
+[01:46:26] [error] APP: Testing OAK_ERROR
+[01:46:26] [critical] APP: Testing OAK_CRITICAL
+[01:46:26] [info] OAK: Creating window WI Venturi (1600, 900)
+[01:46:27] [info] OAK: OpenGL Info:
+[01:46:27] [info] OAK:   Vendor: NVIDIA Corporation
+[01:46:27] [info] OAK:   Renderer: NVIDIA GeForce GTX 970/PCIe/SSE2
+[01:46:27] [info] OAK:   Version: 4.6.0 NVIDIA 512.15

@@ -30,8 +30,8 @@ Oak::Application* Oak::CreateApplication(int argc, char** argv)
 	OAK_CRITICAL("Testing OAK_CRITICAL");
 
 	Oak::ApplicationSpecification spec;
-	spec.name = "WI Venturi";
-	spec.iconPath = "venturi/assets/wi.png";
+	spec.name = "Venturi";
+	spec.iconPath = "assets/textures/venturi.png";
 
 	return new Venturi(spec);
 }
