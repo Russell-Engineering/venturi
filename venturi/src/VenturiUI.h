@@ -5,7 +5,7 @@
 #include "panels/LogPanel.h"
 #include "panels/ExplorerPanel.h"
 #include "panels/SimplePlotPanel.h"
-// #include "oak/core/Image.h"
+#include "platform/OpenGL/OpenGLImage.h"
 
 
 
@@ -27,11 +27,14 @@ private:
 	// void OnOverlayRender();
 	// UI Panels
 	void UI_Toolbar();
-
+private:
     // Panels
     LogPanel m_LogPanel;
     ExplorerPanel m_ExplorerPanel;
     SimplePlotPanel m_SimplePlotPanel;
     SimplePlotPanel m_SimplePlotPanel2;
+
+    //assets
+    Oak::Ref<Oak::OpenGLImage> m_Image;
 };
 

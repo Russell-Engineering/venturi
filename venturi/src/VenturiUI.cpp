@@ -7,6 +7,7 @@
 VenturiUI::VenturiUI()
  	: Layer("VentruiUI")
 {
+	m_Image = std::make_shared<Oak::OpenGLImage>("assets/textures/venturi.png");
 }
 
 void VenturiUI::OnAttach()
@@ -104,6 +105,8 @@ void VenturiUI :: OnUIRender()
 
 	if (ImGui::BeginMenuBar())
 	{
+	//	ImGui::Image((ImTextureID)m_Image->GetTextureID(), ImVec2(500.0f, ImGui::GetContentRegionAvail().y));
+
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(2.0f, 2.0f));
 		if (ImGui::BeginMenu("File"))
 		{
@@ -146,10 +149,11 @@ void VenturiUI :: OnUIRender()
 	}
 	ImGui::End();
 
-
-	// ImGui::Image(m_Image->GetDescriptorSet(), {(float)m_Image->GetWidth(), (float)m_Image->GetHeight()});
+	ImGui::Begin("Image");
+	ImGui::Image((ImTextureID)m_Image->GetTextureID(), {ImGui::GetContentRegionAvail().x, ImGui::GetContentRegionAvail().y});
+	ImGui::End();
 	// static ImGuiWindowFlags flags = ImGuiWindowFlags_NoDecoration;
-
+	
 
 
 	ImPlot::ShowMetricsWindow(&dockspaceOpen);
