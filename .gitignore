@@ -114,4 +114,13 @@ venturi/bin
 venturi/build
 venturi/Makefile
 venturi/*.make
+
+# Files
+.vs
+*.vcxproj
+*.vcxproj.user
+*.vcxproj.filters
+*.sln
+
+
 # End of https://www.toptal.com/developers/gitignore/api/c++,visualstudiocode,c,premake-gmake

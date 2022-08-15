@@ -1,23 +1,37 @@
 #pragma once
 
-#include <memory>
 
-#include "oak/core/Application.h"
-#include "oak/core/Layer.h"
+#include "oak.h"
+#include "panels/LogPanel.h"
+#include "panels/ExplorerPanel.h"
+#include "panels/SimplePlotPanel.h"
 // #include "oak/core/Image.h"
+
 
 
 class VenturiUI : public Oak::Layer
 {
-
 public:
+    VenturiUI();
+    virtual ~VenturiUI() = default;
     virtual void OnAttach() override;
     virtual void OnDetach() override;
+    
+    void OnUpdate(Oak::Timestep ts) override;
     virtual void OnUIRender() override;
-
-    void SetDarkThemeColors();
-
+    // void OnEvent(Oak::Event& e) override;
 private:
-    // std::shared_ptr<Oak::Image> m_Image;
+	// bool OnKeyPressed(Oak::KeyPressedEvent& e);
+	// bool OnMouseButtonPressed(Oak::MouseButtonPressedEvent& e);
+	
+	// void OnOverlayRender();
+	// UI Panels
+	void UI_Toolbar();
 
+    // Panels
+    LogPanel m_LogPanel;
+    ExplorerPanel m_ExplorerPanel;
+    SimplePlotPanel m_SimplePlotPanel;
+    SimplePlotPanel m_SimplePlotPanel2;
 };
+

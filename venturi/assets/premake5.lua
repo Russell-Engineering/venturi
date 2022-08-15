@@ -1,10 +1,9 @@
--- premake5.lua
-workspace "venturi"
+workspace "oakApp"
     architecture "x64"
     configurations { "Debug", "Release", "Dist" }
-    startproject "venturi"
+    startproject "oakApp"
     
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
-include "oak/oakExternal.lua"
-include "venturi"
+include "oakExternal.lua"
+include "oak"

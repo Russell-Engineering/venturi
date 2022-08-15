@@ -5,7 +5,6 @@
 
 #include "VenturiUI.h"
 
-#include "spdlog/spdlog.h"
 
 
 class Venturi : public Oak::Application
@@ -24,8 +23,11 @@ public:
 
 Oak::Application* Oak::CreateApplication(int argc, char** argv)
 {
-	spdlog::info("Welcome to spdlog!");
-    spdlog::error("Some error message with arg: {}", 1);
+	OAK_TRACE("Testing OAK_TRACE");
+	OAK_INFO("Testing OAK_INFO");
+	OAK_WARN("Testing OAK_WARN");
+	OAK_ERROR("Testing OAK_ERROR");
+	OAK_CRITICAL("Testing OAK_CRITICAL");
 
 	Oak::ApplicationSpecification spec;
 	spec.name = "WI Venturi";
