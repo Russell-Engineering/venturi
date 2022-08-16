@@ -94,9 +94,10 @@ void VenturiUI::UI_Sidebar(bool* p_open)
 	ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
 
 	if (ImGui::BeginMenuBar())
-	{
-		ImGui::SetCursorPosY(3.5f);
-		ImGui::Image((ImTextureID)m_AppLogo->GetRendererID(), ImVec2(ImGui::GetContentRegionAvail().x-2.0f, ImGui::GetFrameHeight()-7.0f));
+	{	
+		float size_y = ImGui::GetFrameHeight() - 25.0f;
+		ImGui::SetCursorPosY((ImGui::GetFrameHeight()- size_y) * 0.5f);
+		ImGui::Image((ImTextureID)m_AppLogo->GetRendererID(), ImVec2(ImGui::GetContentRegionAvail().x-2.0f, size_y));
 	}
 	ImGui::EndMenuBar();
 
@@ -224,6 +225,7 @@ void VenturiUI :: OnUIRender()
 	style.WindowMenuButtonPosition = ImGuiDir_Right;
 	style.FrameBorderSize = 0.0f;
 	style.WindowBorderSize = 0.0f;
+	ImVec2 old_frame_padding = style.FramePadding;
 	
 	// Set up Fixed UI bars (note that BeginViewportSidebar has is still in imgui_internal.h and therefore may be unstable).  
 	ImGuiViewport* viewport = ImGui::GetMainViewport();
@@ -232,6 +234,8 @@ void VenturiUI :: OnUIRender()
 		UI_Statusbar(NULL);
 	ImGui::End();
 
+
+	style.FramePadding = ImVec2(10.0f, 10.0f);
 	if (ImGui::BeginViewportSideBar("##SideBar", viewport, ImGuiDir_Left, 47.0f, ui_flags))
 		UI_Sidebar(NULL);
 	ImGui::End();
@@ -239,8 +243,8 @@ void VenturiUI :: OnUIRender()
 	if (ImGui::BeginViewportSideBar("##MainMenu", viewport, ImGuiDir_Up, ImGui::GetFrameHeight(), ui_flags))
 		UI_MainMenu(NULL);
 	ImGui::End();
+	style.FramePadding = old_frame_padding;
 
-	
 
 	ImGui::PopStyleVar(3);
 

@@ -1,10 +1,10 @@
-[18:46:40] [trace] APPLICATION: Testing OAK_TRACE
-[18:46:40] [info] APPLICATION: Testing OAK_INFO
-[18:46:40] [warning] APPLICATION: Testing OAK_WARN
-[18:46:40] [error] APPLICATION: Testing OAK_ERROR
-[18:46:40] [critical] APPLICATION: Testing OAK_CRITICAL
-[18:46:40] [info] ENGINE: Creating window Venturi (1600, 900)
-[18:46:41] [info] ENGINE: OpenGL Info:
-[18:46:41] [info] ENGINE:   Vendor: NVIDIA Corporation
-[18:46:41] [info] ENGINE:   Renderer: NVIDIA GeForce GTX 970/PCIe/SSE2
-[18:46:41] [info] ENGINE:   Version: 4.6.0 NVIDIA 512.15
+[19:08:29] [trace] APPLICATION: Testing OAK_TRACE
+[19:08:29] [info] APPLICATION: Testing OAK_INFO
+[19:08:29] [warning] APPLICATION: Testing OAK_WARN
+[19:08:29] [error] APPLICATION: Testing OAK_ERROR
+[19:08:29] [critical] APPLICATION: Testing OAK_CRITICAL
+[19:08:29] [info] ENGINE: Creating window Venturi (1600, 900)
+[19:08:30] [info] ENGINE: OpenGL Info:
+[19:08:30] [info] ENGINE:   Vendor: NVIDIA Corporation
+[19:08:30] [info] ENGINE:   Renderer: NVIDIA GeForce GTX 970/PCIe/SSE2
+[19:08:30] [info] ENGINE:   Version: 4.6.0 NVIDIA 512.15
