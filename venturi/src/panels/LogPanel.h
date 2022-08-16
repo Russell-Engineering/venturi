@@ -1,8 +1,12 @@
+#pragma once
 #include "imgui/imgui.h"
-#include "spdlog/sinks/sink.h"
+#include "spdlog/sinks/base_sink.h"
 
 
-class LogPanel
+
+
+
+class LogPanel 
 {
 public:
     LogPanel();

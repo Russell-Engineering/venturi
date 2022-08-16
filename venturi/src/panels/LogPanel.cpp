@@ -35,8 +35,8 @@ void LogPanel::OnUIRender(bool* p_open = NULL)
     }
     // Main window.
     ImGui::Text("Todo: Inherit the spdlog::sinks::base_sink<Mutex> to use this panel as a sink for the Oak::Log");
-    ImGui::BeginChild("scrolling", ImVec2(0, ImGui::GetContentRegionAvail().y - 30), false, ImGuiWindowFlags_HorizontalScrollbar);
-    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
+    ImGui::BeginChild("scrolling", ImVec2(0, ImGui::GetContentRegionAvail().y - ImGui::GetFrameHeight()-6.0f), false, ImGuiWindowFlags_HorizontalScrollbar);
+    //ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 4.0f));
     const char* buf = Buf.begin();
     const char* buf_end = Buf.end();
     if (Filter.IsActive())
@@ -81,7 +81,6 @@ void LogPanel::OnUIRender(bool* p_open = NULL)
         }
         clipper.End();
     }
-    ImGui::PopStyleVar();
 
     if (AutoScroll && ImGui::GetScrollY() >= ImGui::GetScrollMaxY())
         ImGui::SetScrollHereY(1.0f);
@@ -113,6 +112,7 @@ void LogPanel::OnUIRender(bool* p_open = NULL)
     ImGui::BeginChild("scrolling");
     ImGui::EndChild();
     ImGui::End();
+    //ImGui::PopStyleVar();
     
 }
 

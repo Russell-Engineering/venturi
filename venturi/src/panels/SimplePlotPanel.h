@@ -1,4 +1,4 @@
-
+#pragma once
 #include "oak.h"
 #include "imgui/imgui.h"
 #include "implot/implot.h"

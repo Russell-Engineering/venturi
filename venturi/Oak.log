@@ -1,10 +1,10 @@
-[17:16:59] [trace] APP: Testing OAK_TRACE
-[17:16:59] [info] APP: Testing OAK_INFO
-[17:16:59] [warning] APP: Testing OAK_WARN
-[17:16:59] [error] APP: Testing OAK_ERROR
-[17:16:59] [critical] APP: Testing OAK_CRITICAL
-[17:16:59] [info] OAK: Creating window Venturi (1600, 900)
-[17:16:59] [info] OAK: OpenGL Info:
-[17:16:59] [info] OAK:   Vendor: Intel
-[17:16:59] [info] OAK:   Renderer: Intel(R) UHD Graphics 630
-[17:16:59] [info] OAK:   Version: 4.6.0 - Build 30.0.101.1404
+[18:46:40] [trace] APPLICATION: Testing OAK_TRACE
+[18:46:40] [info] APPLICATION: Testing OAK_INFO
+[18:46:40] [warning] APPLICATION: Testing OAK_WARN
+[18:46:40] [error] APPLICATION: Testing OAK_ERROR
+[18:46:40] [critical] APPLICATION: Testing OAK_CRITICAL
+[18:46:40] [info] ENGINE: Creating window Venturi (1600, 900)
+[18:46:41] [info] ENGINE: OpenGL Info:
+[18:46:41] [info] ENGINE:   Vendor: NVIDIA Corporation
+[18:46:41] [info] ENGINE:   Renderer: NVIDIA GeForce GTX 970/PCIe/SSE2
+[18:46:41] [info] ENGINE:   Version: 4.6.0 NVIDIA 512.15

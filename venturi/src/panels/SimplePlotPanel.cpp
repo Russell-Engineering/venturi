@@ -12,7 +12,6 @@ void SimplePlotPanel::OnUIRender(const char* title, bool* p_open)
     ImGui::BulletText("This example assumes 60 FPS. Higher FPS requires larger buffer size.");
     
     
-    ImGui::BeginChild(title, ImVec2(0, ImGui::GetContentRegionAvail().y - 30), false, ImGuiWindowFlags_HorizontalScrollbar);
     ImVec2 mouse = ImGui::GetMousePos();
     static float t = 0;
     t += ImGui::GetIO().DeltaTime;
@@ -35,13 +34,7 @@ void SimplePlotPanel::OnUIRender(const char* title, bool* p_open)
         ImPlot::PlotLine("Mouse Y", &rdata2.Data[0].x, &rdata2.Data[0].y, rdata2.Data.size(), 0, 0, 2 * sizeof(float));
         ImPlot::EndPlot();
     }
-    ImGui::EndChild();
-    ImGui::Separator();
-    ImGui::BeginChild("Target File", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
-    ImGui::Text("No File Loaded ...");
-    ImGui::SameLine();
-    ImGui::Button("Set Target File", ImVec2(-0.0f, 0.0f));
-    ImGui::EndChild();
+
    
 	ImGui::End();
 }

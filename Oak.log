@@ -1,0 +1,10 @@
+[08:02:53] [trace] APP: Testing OAK_TRACE
+[08:02:53] [info] APP: Testing OAK_INFO
+[08:02:53] [warning] APP: Testing OAK_WARN
+[08:02:53] [error] APP: Testing OAK_ERROR
+[08:02:53] [critical] APP: Testing OAK_CRITICAL
+[08:02:53] [info] OAK: Creating window Venturi (1600, 900)
+[08:02:53] [info] OAK: OpenGL Info:
+[08:02:53] [info] OAK:   Vendor: NVIDIA Corporation
+[08:02:53] [info] OAK:   Renderer: NVIDIA GeForce GTX 970/PCIe/SSE2
+[08:02:53] [info] OAK:   Version: 4.6.0 NVIDIA 512.15

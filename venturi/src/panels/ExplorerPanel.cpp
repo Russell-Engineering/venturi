@@ -7,8 +7,10 @@ ExplorerPanel::ExplorerPanel()
 
 void ExplorerPanel::OnUIRender(bool* p_open)
 {
-	ImGui::Begin("Navigation",p_open, ImGuiWindowFlags_NoBackground);
-	ImGui::Text("Todo: Add file exploere and a way to set working directory");
+	if (ImGui::Begin("##Explorer"))
+	{
+		ImGui::TextWrapped("Todo: Add a folder tree view into the current working directory");
+	}
 	ImGui::End();
 }
 
