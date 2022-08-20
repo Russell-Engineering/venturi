@@ -15,6 +15,7 @@ project "venturi"
     
     includedirs
     {  
+        "src", 
         "../oak/oak/src",
         "../oak/vendor",
         "../oak/vendor/implot",

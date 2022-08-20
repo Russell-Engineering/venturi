@@ -1,12 +1,25 @@
 #pragma once
-#include "imgui/imgui.h"
 
-class ExplorerPanel
+#include "oak.h"
+#include "UI.h"
+
+namespace Venturi
 {
-public:
-    ExplorerPanel();
-    ~ExplorerPanel() = default;
+    class ExplorerPanel : public Oak::Panel
+    {
+    public:
+        ExplorerPanel(const std::string& name, bool show, UI* parent);
+        ~ExplorerPanel() = default;
 
-    void OnUIRender(bool* p_open);
+        void SetLocalStyle() override;
+        void OnUIRender(bool* open);
+        std::pair<bool, uint32_t> DirectoryTreeViewRecursive(const std::filesystem::path& path, uint32_t* count, int* selection_mask);
+
+    private:
+        UI* m_Parent;
+        Oak::Ref<Oak::Texture2D> m_RefreshIcon;
+
+        bool m_expanded;
 };
 
+}

@@ -10,3 +10,6 @@ Oak handles all the backend stuff like creating windows, imgui panels, handling 
 the venturi app simply defines the UI elements. 
 
 this is very much a work in progress. 
+
+
+![](venturi/assets/DAQ-Architecture-white.svg "daq software architecture")

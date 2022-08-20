@@ -1,24 +1,24 @@
 
-#include "oak/core/Application.h"
+#include "oak.h"
 #include "oak/core/EntryPoint.h"
+#include "UI.h"
+//#include "layers/Workspace.h"
 
 
-#include "VenturiUI.h"
-
-
-
-class Venturi : public Oak::Application
+class VenturiApp : public Oak::Application
 {
 public:
-	Venturi(const Oak::ApplicationSpecification& spec)
+
+	VenturiApp(const Oak::ApplicationSpecification& spec)
 		: Oak::Application(spec)
 	{
-		PushLayer(new VenturiUI());
+		PushLayer(new Venturi::UI());
 	}
-		
-	~Venturi()
+
+	VenturiApp::~VenturiApp()
 	{
 	}
+
 };
 
 Oak::Application* Oak::CreateApplication(int argc, char** argv)
@@ -31,9 +31,7 @@ Oak::Application* Oak::CreateApplication(int argc, char** argv)
 
 	Oak::ApplicationSpecification spec;
 	spec.name = "Venturi";
-	spec.iconPath = "assets/textures/venturi.png";
+	spec.fullscreen = true;
 
-	return new Venturi(spec);
+	return new VenturiApp(spec);
 }
-
-
