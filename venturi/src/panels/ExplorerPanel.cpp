@@ -45,6 +45,8 @@ namespace Venturi
 		: Oak::Panel(name, show), m_Parent(parent), m_expanded(true)
 	{
 		m_RefreshIcon = Oak::Texture2D::Create("assets/textures/icons8-restart-16.png");
+		m_NewFileIcon = Oak::Texture2D::Create("assets/textures/icons8-add-file-16.png");
+		m_NewDirIcon = Oak::Texture2D::Create("assets/textures/icons8-add-folder-16.png");
 	}
 
 	void ExplorerPanel::SetLocalStyle()
@@ -68,18 +70,48 @@ namespace Venturi
 		
 		ImGui::SetNextItemOpen(m_expanded);
 		m_expanded = ImGui::CollapsingHeader("EXPLORER");
-		bool hovered = ImGui::IsWindowHovered() || ImGui::IsWindowFocused;
+		bool hovered = ImGui::IsWindowHovered() || ImGui::IsWindowFocused();
 		ImGui::SameLine();
 		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1, 1, 1, 0.5f));
 		ImGui::Text(" %s\\", Oak::Application::Get().GetSpecification().workingDirectory.c_str());
 		ImGui::PopStyleColor();
 		if (hovered)
 		{
-			int pad = 0;
+			int pad = 2;
 			float size = ImGui::GetFrameHeight() - 2.0f * pad;
-			ImGui::SameLine(ImGui::GetContentRegionAvail().x - size);
-			ImGui::BeginChild("##REFRESH_EXPLORER", ImVec2(size, size));
+			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0.0f, 0.0f));
+			ImGui::SameLine(ImGui::GetContentRegionAvail().x - 3.0*(size+2*pad));
+			ImGui::BeginChild("##REFRESH_EXPLORER", ImVec2(3.0*(size+2.0*pad), (size+2.0*pad)));
 			ImGui::ImageButton((ImTextureID)m_RefreshIcon->GetRendererID(), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), pad);
+		
+			if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
+			{
+				ImGui::SetTooltip("Refresh Explorer");
+			}
+
+			ImGui::SameLine();
+			if (ImGui::ImageButton((ImTextureID)m_NewFileIcon->GetRendererID(), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), pad))
+			{
+				// new file to explorer
+				// prompt for name
+			}
+			if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
+			{
+				ImGui::SetTooltip("New File");
+			}
+
+			ImGui::SameLine();
+			if (ImGui::ImageButton((ImTextureID)m_NewDirIcon->GetRendererID(), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), pad))
+			{
+				// new directory to explorer
+				// prompt for name
+			}
+			if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
+			{
+				ImGui::SetTooltip("New Directory");
+			}
+
+			ImGui::PopStyleVar(); //ImGuiStyleVar_ItemSpacing
 			ImGui::EndChild();
 		}
 		if (m_expanded)

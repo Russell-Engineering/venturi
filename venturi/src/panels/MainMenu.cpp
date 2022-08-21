@@ -32,16 +32,32 @@ namespace Venturi
         ImGuiIO& io = ImGui::GetIO();
 
         if (ImGui::BeginViewportSideBar("##MainMenu", viewport, ImGuiDir_Up, ImGui::GetFrameHeight(), ui_flags))
-        {
+        {       
                 if (ImGui::IsWindowFocused() && ImGui::IsMouseDown(ImGuiMouseButton_Left))
                 {
-                    ImVec2 clicked_pos = io.MouseClickedPos[ImGuiMouseButton_Left];
                     ImVec2 current_pos = io.MousePos;
+                    ImVec2 last_pos = GetParent()->GetLastMousePos();
                     ImVec2 delta_mouse = io.MouseDelta;
-                    OAK_WARN("({},{})", delta_mouse.x, delta_mouse.y);
-                    if (Oak::Application::Get().IsMaximized() && (std::abs(delta_mouse.x) > 0 || std::abs(delta_mouse.y) > 0)) Oak::Application::Get().GetWindow().Restore();
+                    float x = current_pos.x - GetParent()->GetRelativeMousePos().x;
+                    float y = current_pos.y - GetParent()->GetRelativeMousePos().y;
+
+
+                    if (Oak::Application::Get().IsMaximized())
+                    {
+                         // if the window is maximized, add in a buffer to prevent accidentally restoring the window
+                        //if ((std::abs(delta_mouse.x) > 10 || std::abs(delta_mouse.y) > 10))
+                        if ((std::abs(delta_mouse.x) > 10 || std::abs(delta_mouse.y) > 10))
+                        {
+                            Oak::Application::Get().GetWindow().Restore();
+                            Oak::Application::Get().GetWindow().MoveDelta(delta_mouse.x, delta_mouse.y);
+                            //Oak::Application::Get().GetWindow().Move(x, y);
+                        }
+                    } else {
+                        Oak::Application::Get().GetWindow().MoveDelta(delta_mouse.x, delta_mouse.y);
+                        //Oak::Application::Get().GetWindow().Move(x, y);
+                    }
+
                     //Oak::Application::Get().GetWindow().Move(current_pos.x- clicked_pos.x, current_pos.y - clicked_pos.y);
-                    Oak::Application::Get().GetWindow().Move(delta_mouse.x, delta_mouse.y);
                 }
 
                 if (ImGui::IsWindowFocused() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
@@ -84,10 +100,16 @@ namespace Venturi
                 }
                 if (ImGui::BeginMenu("VIEW"))
                 {
-                    //ImGui::MenuItem("Example PLots", NULL, &m_show_simple_plot);
-                    //ImGui::MenuItem("File Explorer", "Ctrl+Shit+E", &m_show_explorer);
-                    //ImGui::MenuItem("Output Log", NULL, &m_show_app_log);
-                    ImGui::MenuItem("Demos", NULL, GetParent()->GetPanel("Demos")->p_open);
+                    for (Oak::Panel* panel : GetParent()->GetPanelStack()->GetPanels())
+                    {
+                        std::stringstream ss;
+                        if (panel->GetID() < 10)
+                        {
+                            ss << "ctrl + " << panel->GetID() % 10;
+                        }
+                        OAK_WARN("Adding Panel {}:{} to menu with state {}", panel->GetID(), panel->GetName(), *panel->p_open);
+                        ImGui::MenuItem(panel->GetName().c_str(), ss.str().c_str(), panel->p_open);
+                    }
                     ImGui::EndMenu();
                 }
                 if (ImGui::BeginMenu("OPTIONS"))

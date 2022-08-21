@@ -18,8 +18,10 @@ namespace Venturi
     private:
         UI* m_Parent;
         Oak::Ref<Oak::Texture2D> m_RefreshIcon;
+        Oak::Ref<Oak::Texture2D> m_NewFileIcon;
+        Oak::Ref<Oak::Texture2D> m_NewDirIcon; 
 
-        bool m_expanded;
+        bool m_expanded = false;
 };
 
 }

@@ -23,7 +23,7 @@ void DrawCanvas()
     uint32_t height = Oak::Application::Get().GetWindow().GetHeight();
     uint32_t width = Oak::Application::Get().GetWindow().GetWidth();
 
-    float spacing = 1.0f / 40.0f;
+    float spacing = 1.0f / 60.0f;
     float dx = spacing;
     float dy = spacing * width/height;
     glLineWidth(0.01f);
@@ -58,21 +58,17 @@ void DrawCanvas()
 
     void UI::OnAttach()
     {
+        PushPanel(new DemoPanels("Demos", HIDE, this));
+        PushPanel(new ExplorerPanel("Explorer", HIDE, this));
+        PushPanel(new LogPanel("Log", HIDE, this));
+        PushPanel(new AppMetrics("Metrics", SHOW, this));
+        PushPanel(new AboutPanel("About", HIDE, this));
+
+        // todo: consider isolating these three to be permanent and not to show up in the view menu
         PushPanel(new MainMenu("##MainMenu", SHOW, this));
         PushPanel(new StatusBar("##StatusBar", SHOW, this));
         PushPanel(new SideBar("##SideBar", SHOW, this));
-        PushPanel(new AboutPanel("About",HIDE,  this));
-        PushPanel(new DemoPanels("Demos", HIDE, this));
-        PushPanel(new ExplorerPanel("Explorer", SHOW, this));
-        PushPanel(new LogPanel("Log", SHOW, this));
-        PushPanel(new AppMetrics("Metrics", SHOW, this));
 
-        std::stringstream ss;
-	    ss << "Plot-" << m_plotcount++;
-        PushPanel(new RTPlot(ss.str(), SHOW, this));
-        ss.str(std::string());
-	    ss << "Plot-" << m_plotcount++;
-        PushPanel(new RTPlot(ss.str(), SHOW, this));
     }
 
     void UI::OnDetach()
@@ -98,12 +94,14 @@ void DrawCanvas()
 
         for (Oak::Panel* panel : m_PanelQueue)
         {
-            OAK_INFO("adding panel {}:{} to m_PanelStack", panel->GetID(), panel->GetName());
+           // OAK_INFO("adding panel {}:{} to m_PanelStack", panel->GetID(), panel->GetName());
             PushPanel(&(*panel));
             OAK_INFO("added");
         }
         m_PanelQueue.ClearStack();
 
+        ImGuiIO& io = ImGui::GetIO();
+        m_LastMousePos = io.MousePos;
 
     }
 
@@ -111,7 +109,7 @@ void DrawCanvas()
     {
         for (Oak::Panel* panel : m_PanelStack)
         {
-            OAK_WARN("looping panel stack: current pannel {}:{}", panel->GetID(), panel->GetName());
+            //OAK_WARN("looping panel stack: current pannel {}:{}", panel->GetID(), panel->GetName());
             SetGlobalStyle();
             panel->SetLocalStyle();
             if (panel->Visibility()) panel->OnUIRender(panel->p_open);
@@ -143,6 +141,7 @@ void DrawCanvas()
         return nullptr;
     }
 
+
     void UI::OnEvent(Oak::Event& e)
     {
         Oak::EventDispatcher dispatcher(e);
@@ -162,13 +161,13 @@ void DrawCanvas()
 
     bool UI::OnMouseButtonPressed(Oak::MouseButtonPressedEvent& e)
     {
-        OAK_TRACE("UI::OnMouseButtonPressed: {}", e.ToString());
+        SetRelativeMousePos(ImGui::GetIO().MousePos.x - Oak::Application::Get().GetWindow().GetPosX(), ImGui::GetIO().MousePos.y - Oak::Application::Get().GetWindow().GetPosY());
         return false;
     }
 
     bool UI::OnMouseButtonReleased(Oak::MouseButtonReleasedEvent& e)
     {
-        OAK_TRACE("UI::OnMouseButtonReleased: {}", e.ToString());
+        SetLastWindowPos(Oak::Application::Get().GetWindow().GetPosX(), Oak::Application::Get().GetWindow().GetPosX());
         return false;
     }
 
@@ -183,6 +182,11 @@ void DrawCanvas()
 
         switch (e.GetKeyCode())
         {
+        case Oak::Key::D1:
+        {
+            if (control) GetPanel(1)->Toggle();
+            break;
+        }
         case Oak::Key::N:
         {
             if (control) NewFile();

@@ -1,6 +1,6 @@
 #pragma once
 #include "Oak.h"
-
+#include "ImGui/imgui.h"
 
 namespace Venturi
 {
@@ -31,12 +31,20 @@ namespace Venturi
         void SaveFileAs();
 
         void UpdateWindowPos();
+        ImVec2 GetLastMousePos() {return m_LastMousePos;}
+        void SetLastWindowPos(float x, float y) { m_LastMousePos.x = x; m_LastMousePos.y = y; }
+
+        ImVec2 GetRelativeMousePos() { return m_RelativeMousePos; }
+        void SetRelativeMousePos(float x, float y) { m_RelativeMousePos.x = x; m_RelativeMousePos.y = y; }
 
         Oak::Panel* GetPanel(std::string name);
         Oak::Panel* GetPanel(uint32_t id);
+        Oak::PanelStack* GetPanelStack() {return &m_PanelStack; }
 
     private:
         uint32_t m_plotcount;
+        ImVec2 m_LastMousePos; 
+        ImVec2 m_RelativeMousePos;
         Oak::PanelStack m_PanelStack;
         Oak::PanelStack m_PanelQueue;
         bool OnKeyPressed(Oak::KeyPressedEvent& e);
