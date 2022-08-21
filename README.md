@@ -13,7 +13,7 @@ The UI elements are defined by subclassing the Oak::Panel class and implementing
 
 Below is the proposed architecture for the WI DAQ Software. 
 
-![](venturi/assets/DAQ-Architecture-white.svg "daq software architecture")
+![](venturi/assets/DAQ-Architecture.svg "daq software architecture")
 
 Building Venturi
 ---
