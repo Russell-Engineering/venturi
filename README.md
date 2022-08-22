@@ -17,6 +17,11 @@ Below is the proposed architecture for the WI DAQ Software.
 
 Building Venturi
 ---
+Prerequisists:
+
+    - Visual Studio 2022
+
+
 on your first build of venturi, do the following [windows only for now]:
 
     $ git clone --recursive https://github.com/csooriyakumaran/venturi
@@ -35,7 +40,8 @@ to pull latest changes
 
 To Do:
 ---
-- [x] 1. 
+- [ ] 1. test building with GNU Make and GCC (requires modification to the premake files to statically link all dependencies to the venturi project)
+- [ ] 2. currently, p_open is passed as a pointer to OnUIRender(), however it seems to be generally considered better to pass by refrence. the result is the same, but references cannot be NULL so this might be safer?
 
 
 see also the [Trello](https://trello.com/b/Z9r0WtYm/russel-application-sw) board.
