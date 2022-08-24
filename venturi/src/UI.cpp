@@ -1,6 +1,7 @@
 #include "imgui/imgui.h"
 #include "ImGui/imgui_internal.h"
 #include "implot/implot.h"
+#include "imnodes/imnodes.h"
 
 #include "oak/utils/PlatformUtils.h"
 
@@ -63,6 +64,7 @@ void DrawCanvas()
         PushPanel(new LogPanel("Log", HIDE, this));
         PushPanel(new AppMetrics("Metrics", SHOW, this));
         PushPanel(new AboutPanel("About", HIDE, this));
+        PushPanel(new NodeEditor("Configuration", SHOW, this));
 
         // todo: consider isolating these three to be permanent and not to show up in the view menu
         PushPanel(new MainMenu("##MainMenu", SHOW, this));
@@ -119,6 +121,8 @@ void DrawCanvas()
 
     void UI::OnUIRender()
     {
+
+
         for (Oak::Panel* panel : m_PanelStack)
         {
             //OAK_WARN("looping panel stack: current pannel {}:{}", panel->GetID(), panel->GetName());

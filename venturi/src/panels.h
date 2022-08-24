@@ -8,7 +8,7 @@
 #include "panels/LogPanel.h"
 #include "panels/AppMetrics.h"
 #include "panels/RTPlot.h"
-
+#include "panels/NodeEditor.h"
 
 
 #include "panels/DemoPanels.h"

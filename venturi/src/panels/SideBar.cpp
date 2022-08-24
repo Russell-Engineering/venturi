@@ -70,6 +70,7 @@ namespace Venturi
                 ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f) - (size * 0.5f));
                 if (ImGui::ImageButton((ImTextureID)m_ConnectionIcon->GetRendererID(), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.0f, 0.0f, 0.0f), ImVec4(1, 1, 1, 0.5f)))
                 {
+                    GetParent()->GetPanel("Configuration")->Toggle();
                     //ImGui::SetWindowFocus("Testing Module");
                 }
 
