@@ -12,7 +12,7 @@ namespace Venturi
         ~MainMenu() = default;
         
         void SetLocalStyle() override;
-        void OnUIRender(bool* open) override;
+        void OnUIRender(bool* p_open) override;
         
         UI* GetParent() { return m_Parent; }
     

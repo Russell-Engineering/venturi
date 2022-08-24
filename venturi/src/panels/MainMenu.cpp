@@ -38,8 +38,8 @@ namespace Venturi
                     ImVec2 current_pos = io.MousePos;
                     ImVec2 last_pos = GetParent()->GetLastMousePos();
                     ImVec2 delta_mouse = io.MouseDelta;
-                    float x = current_pos.x - GetParent()->GetRelativeMousePos().x;
-                    float y = current_pos.y - GetParent()->GetRelativeMousePos().y;
+                    float x = GetParent()->GetRelativeMousePos().x * (float) GetParent()->GetRestoredWidth();
+                    float y = GetParent()->GetRelativeMousePos().y * (float) GetParent()->GetRestoredHeight();
 
 
                     if (Oak::Application::Get().IsMaximized())
@@ -48,9 +48,10 @@ namespace Venturi
                         //if ((std::abs(delta_mouse.x) > 10 || std::abs(delta_mouse.y) > 10))
                         if ((std::abs(delta_mouse.x) > 10 || std::abs(delta_mouse.y) > 10))
                         {
+                            OAK_WARN("{}, {}", x, y);
                             Oak::Application::Get().GetWindow().Restore();
-                            Oak::Application::Get().GetWindow().MoveDelta(delta_mouse.x, delta_mouse.y);
-                            //Oak::Application::Get().GetWindow().Move(x, y);
+                            Oak::Application::Get().GetWindow().Move((int)(current_pos.x -x), (int)(current_pos.y)-y);
+                           // Oak::Application::Get().GetWindow().MoveDelta(delta_mouse.x, delta_mouse.y);
                         }
                     } else {
                         Oak::Application::Get().GetWindow().MoveDelta(delta_mouse.x, delta_mouse.y);

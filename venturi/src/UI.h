@@ -34,8 +34,11 @@ namespace Venturi
         ImVec2 GetLastMousePos() {return m_LastMousePos;}
         void SetLastWindowPos(float x, float y) { m_LastMousePos.x = x; m_LastMousePos.y = y; }
 
+        uint32_t GetRestoredWidth() { return m_RestoredWidth; }
+        uint32_t GetRestoredHeight() { return m_RestoredHeight; }
         ImVec2 GetRelativeMousePos() { return m_RelativeMousePos; }
-        void SetRelativeMousePos(float x, float y) { m_RelativeMousePos.x = x; m_RelativeMousePos.y = y; }
+        //void SetRelativeMousePos(float x, float y) { m_RelativeMousePos.x = x; m_RelativeMousePos.y = y; }
+        void SetRelativeMousePos();
 
         Oak::Panel* GetPanel(std::string name);
         Oak::Panel* GetPanel(uint32_t id);
@@ -43,6 +46,8 @@ namespace Venturi
 
     private:
         uint32_t m_plotcount;
+        uint32_t m_RestoredWidth=1600;
+        uint32_t m_RestoredHeight=900;
         ImVec2 m_LastMousePos; 
         ImVec2 m_RelativeMousePos;
         Oak::PanelStack m_PanelStack;

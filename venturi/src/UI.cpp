@@ -87,6 +87,12 @@ void DrawCanvas()
 
     void UI::OnUpdate(Oak::Timestep ts)
     {
+
+        // todo:    windows snapping if dragging to edges of screen
+        //          resize with drag
+        //          improve drag moving update speed. maybe the whole thing should live in the OnUpdate?
+        //          fixed canvas spacing regardless of window size. move canvas to renderer 
+        // 
         //UpdateWindowPos();
         Oak::RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
         Oak::RenderCommand::Clear();
@@ -94,14 +100,20 @@ void DrawCanvas()
 
         for (Oak::Panel* panel : m_PanelQueue)
         {
-           // OAK_INFO("adding panel {}:{} to m_PanelStack", panel->GetID(), panel->GetName());
+            OAK_TRACE("UI::OnUpDate : Panel {}:{} to m_PanelStack", panel->GetID(), panel->GetName());
             PushPanel(&(*panel));
-            OAK_INFO("added");
         }
         m_PanelQueue.ClearStack();
 
         ImGuiIO& io = ImGui::GetIO();
         m_LastMousePos = io.MousePos;
+        SetRelativeMousePos();
+
+        if (Oak::Application::Get().IsRestored())
+        {
+            m_RestoredWidth = Oak::Application::Get().GetWindow().GetWidth();
+        }
+
 
     }
 
@@ -159,9 +171,27 @@ void DrawCanvas()
         QueuePanel(new RTPlot(ss.str(), true, this));
     }
 
+    void UI::SetRelativeMousePos()
+    {
+        ImGuiIO& io = ImGui::GetIO();
+
+        int x = ImGui::GetIO().MousePos.x;
+        int y = ImGui::GetIO().MousePos.y;
+        int win_w = Oak::Application::Get().GetWindow().GetWidth();
+        int win_h = Oak::Application::Get().GetWindow().GetHeight();
+        int win_x = Oak::Application::Get().GetWindow().GetPosX();
+        int win_y = Oak::Application::Get().GetWindow().GetPosY();
+        
+        m_RelativeMousePos = ImVec2((float)(x-win_x) / (float)win_w, (float)(y - win_y) / (float)win_h);
+
+
+
+    }
+
     bool UI::OnMouseButtonPressed(Oak::MouseButtonPressedEvent& e)
     {
-        SetRelativeMousePos(ImGui::GetIO().MousePos.x - Oak::Application::Get().GetWindow().GetPosX(), ImGui::GetIO().MousePos.y - Oak::Application::Get().GetWindow().GetPosY());
+        //SetRelativeMousePos(ImGui::GetIO().MousePos.x - Oak::Application::Get().GetWindow().GetPosX(), ImGui::GetIO().MousePos.y - Oak::Application::Get().GetWindow().GetPosY());
+        SetRelativeMousePos();
         return false;
     }
 
@@ -173,6 +203,12 @@ void DrawCanvas()
 
     bool UI::OnKeyPressed(Oak::KeyPressedEvent& e)
     {
+
+        //todo: F11 for pseudo full screent (hide toolbars)
+        //      ctrl+d0-d9 for toggling focus on pannels
+        //      windows snapping with superkey
+        //      
+
         if (e.IsRepeat())
             return false;
 
