@@ -20,7 +20,7 @@ project "venturi"
         "../oak/vendor",
         "../oak/vendor/implot",
         "../oak/vendor/imgui",
-        "../oak/vendor/imnode"
+        "../oak/vendor/imnode",
         "../oak/vendor/spdlog/include",
         "../oak/vendor/glad/include",
         "../oak/vendor/glfw/include",
