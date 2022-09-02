@@ -1,7 +1,6 @@
 #pragma once
-#include "oak/core/Panel.h"
+#include "oak/UI/Panel.h"
 #include "imgui/imgui.h"
-#include "spdlog/sinks/base_sink.h"
 
 #include "UI.h"
 
@@ -11,11 +10,12 @@ namespace Venturi
 class LogPanel : public Oak::Panel
 {
 public:
+    LogPanel() {}
     LogPanel(const std::string& name, bool show, UI* parent);
     ~LogPanel() = default;
 
-    void OnUIRender(bool* p_open) override;
-    void SetLocalStyle() override;
+    void OnUIRender(const char* name, bool& open) override;
+    void PushLocalStyle() override;
 
     void Clear();
     void AddLog(const char* fmt, ...);

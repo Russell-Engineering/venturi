@@ -25,6 +25,7 @@ project "venturi"
         "../oak/vendor/glad/include",
         "../oak/vendor/glfw/include",
         "../oak/vendor/glm",
+        "../oak/vendor/yaml-cpp/include"
     }
 
     links

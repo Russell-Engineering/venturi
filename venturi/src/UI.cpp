@@ -3,11 +3,14 @@
 #include "implot/implot.h"
 #include "imnodes/imnodes.h"
 
-#include "oak/utils/PlatformUtils.h"
+#include "oak/utilities/FileSystem.h"
 
 
 #include "UI.h"
 #include "panels.h"
+#include "resources.h"
+
+#include "oak/serialization/ImGuiStyleSerializer.h"
 
 //temporary
 #include "glad/include/glad/glad.h"
@@ -19,72 +22,96 @@
 namespace Venturi
 {
 
-void DrawCanvas()
-{
-    uint32_t height = Oak::Application::Get().GetWindow().GetHeight();
-    uint32_t width = Oak::Application::Get().GetWindow().GetWidth();
+#define MAIN_MENU "MainMenu"
+#define SIDEBAR "Sidebar"
+#define STATUS_BAR "StatusBar"
 
-    float spacing = 1.0f / 60.0f;
-    float dx = spacing;
-    float dy = spacing * width/height;
-    glLineWidth(0.01f);
-    for (float i = -1.0f; i < 1.0f; i += dx )    
-    {
-
-        glBegin(GL_LINES);
-        glColor4f(1.0, 1.0, 1.0, 0.5);
-        glVertex2f(i,-1);
-        glVertex2f(i,1);
-        glEnd();
-
-    }
-    for (float j = -1.0f; j < 1.0f; j += dy)
-    {
-        glBegin(GL_LINES);
-        glColor4f(1.0, 1.0, 1.0, 0.5);
-        glVertex2f(-1, j);
-        glVertex2f(1, j);
-        glEnd();
-    }
-
-}
+#define IMGUI_DEMO_PANEL "ImGuiDemo"
+#define FILE_EXPLORER_PANEL "FileExplorer"
+#define EMBEDDED_TERMINAL "Terminal"
+#define APPLICATION_METRICS_PANEL "ApplicationMetrics"
+#define ABOUT_PANEL "AboutPanel"
+#define NODE_EDITOR "NodeEditor"
+#define SETTINGS_PANEL "SettingsPanel"
 
 #define SHOW true
 #define HIDE false
+        
+
+    void DrawCanvas()
+    {
+        uint32_t height = Oak::Application::Get().GetWindow().GetHeight();
+        uint32_t width = Oak::Application::Get().GetWindow().GetWidth();
+
+        float spacing = 1.0f / 60.0f;
+        float dx = spacing;
+        float dy = spacing * width / height;
+        glLineWidth(0.01f);
+        for (float i = -1.0f; i < 1.0f; i += dx)
+        {
+
+            glBegin(GL_LINES);
+            glColor4f(1.0, 1.0, 1.0, 0.5);
+            glVertex2f(i, -1);
+            glVertex2f(i, 1);
+            glEnd();
+
+        }
+        for (float j = -1.0f; j < 1.0f; j += dy)
+        {
+            glBegin(GL_LINES);
+            glColor4f(1.0, 1.0, 1.0, 0.5);
+            glVertex2f(-1, j);
+            glVertex2f(1, j);
+            glEnd();
+        }
+
+    }
 
     UI::UI()
-     : Layer("VENTURI UI LAYER"), m_plotcount(0)
+        : Layer("VENTURI UI LAYER"), m_plotcount(0), m_Style(ImGui::GetStyle())
     {
+       
     }
 
     void UI::OnAttach()
     {
-        PushPanel(new DemoPanels("Demos", HIDE, this));
-        PushPanel(new ExplorerPanel("Explorer", HIDE, this));
-        PushPanel(new LogPanel("Log", HIDE, this));
-        PushPanel(new AppMetrics("Metrics", SHOW, this));
-        PushPanel(new AboutPanel("About", HIDE, this));
-        PushPanel(new NodeEditor("Configuration", SHOW, this));
+        Resources::Init();
 
-        // todo: consider isolating these three to be permanent and not to show up in the view menu
-        PushPanel(new MainMenu("##MainMenu", SHOW, this));
-        PushPanel(new StatusBar("##StatusBar", SHOW, this));
-        PushPanel(new SideBar("##SideBar", SHOW, this));
+        Oak::ImGuiStyleSerializer styleSerializer = Oak::ImGuiStyleSerializer(m_Style);
+        if (!styleSerializer.Deserialize("assets/styles/default.style"))
+            OAK_ERROR("could not serialize style");
+        
+        ImGuiStyle& style = ImGui::GetStyle();
+        style = m_Style;
+        OAK_WARN_TAG("UI::OnAttach", "TAB ROUNDING {}", m_Style.TabRounding);
 
+        // panels
+        m_PanelManager = Oak::CreateScope<Oak::PanelManager>();
+
+        m_PanelManager->AddPanel<ExplorerPanel>(Oak::PanelCategory::VIEW, FILE_EXPLORER_PANEL, "EXPLORER", HIDE);
+        m_PanelManager->AddPanel<LogPanel>(Oak::PanelCategory::VIEW, EMBEDDED_TERMINAL, "LOG", HIDE);
+
+        //m_PanelManager->AddPanel<OptionsPanel>(Oak::PanelCategory::EDIT, SETTINGS_PANEL, "Project Settings", false);
+        m_PanelManager->AddPanel<OptionsPanel>(Oak::PanelCategory::EDIT, SETTINGS_PANEL, "SETTINGS", HIDE);
+        m_PanelManager->AddPanel<NodeEditor>(Oak::PanelCategory::EDIT, NODE_EDITOR, "SETUP", HIDE);
+        //m_PanelManager->AddPanel<OptionsPanel>(Oak::PanelCategory::EDIT, SETTINGS_PANEL, "User Preferences", false);
+
+       // m_PanelManager->AddPanel<AppMetrics>(Oak::PanelCategory::TOOLS, APPLICATION_METRICS_PANEL, "APP METRICS", HIDE);
+        //m_PanelManager->AddPanel<DemoPanels>(Oak::PanelCategory::TOOLS, IMGUI_DEMO_PANEL, "DEMOS", HIDE);
+        
+        m_PanelManager->AddPanel<AboutPanel>(Oak::PanelCategory::HELP, ABOUT_PANEL, "ABOUT", HIDE);
     }
 
     void UI::OnDetach()
     {
+        Resources::Shutdown();
     }
 
-    void UI::PushPanel(Oak::Panel* panel)
+    void UI::SetGlobalStyle()
     {
-        m_PanelStack.PushPanel(panel);
-    }
-
-    void UI::QueuePanel(Oak::Panel* panel)
-    {
-        m_PanelQueue.PushPanel(panel);
+        ImGuiStyle& style = ImGui::GetStyle();
+        style = m_Style;
     }
 
     void UI::OnUpdate(Oak::Timestep ts)
@@ -98,14 +125,7 @@ void DrawCanvas()
         //UpdateWindowPos();
         Oak::RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
         Oak::RenderCommand::Clear();
-        DrawCanvas();
-
-        for (Oak::Panel* panel : m_PanelQueue)
-        {
-            OAK_TRACE("UI::OnUpDate : Panel {}:{} to m_PanelStack", panel->GetID(), panel->GetName());
-            PushPanel(&(*panel));
-        }
-        m_PanelQueue.ClearStack();
+        //DrawCanvas();
 
         ImGuiIO& io = ImGui::GetIO();
         m_LastMousePos = io.MousePos;
@@ -121,42 +141,15 @@ void DrawCanvas()
 
     void UI::OnUIRender()
     {
+        SetGlobalStyle();
+       
+        DrawMenu();
+        DrawStatusBar();
+        DrawSidebar();
 
-
-        for (Oak::Panel* panel : m_PanelStack)
-        {
-            //OAK_WARN("looping panel stack: current pannel {}:{}", panel->GetID(), panel->GetName());
-            SetGlobalStyle();
-            panel->SetLocalStyle();
-            if (panel->Visibility()) panel->OnUIRender(panel->p_open);
-        }
+        m_PanelManager->OnUIRender();
         SetGlobalStyle();
     }
-
-    Oak::Panel* UI::GetPanel(std::string name)
-    {
-        for (Oak::Panel* panel : m_PanelStack)
-        {
-          if (panel->GetName() == name)
-            return panel;
-
-        }
-        OAK_ASSERT(false, "No panel found");
-        return nullptr;
-    }
-
-    Oak::Panel* UI::GetPanel(uint32_t id)
-    {
-        for (Oak::Panel* panel : m_PanelStack)
-        {
-            if (panel->GetID() == id)
-                return panel;
-
-        }
-        OAK_ASSERT(false, "No panel found");
-        return nullptr;
-    }
-
 
     void UI::OnEvent(Oak::Event& e)
     {
@@ -170,23 +163,24 @@ void DrawCanvas()
     {
         std::stringstream ss;
         ss.str(std::string());
-	    ss << "Plot-" << m_plotcount++;
+        ss << "Plot-" << m_plotcount++;
         OAK_INFO("Adding new plot {}", ss.str());
-        QueuePanel(new RTPlot(ss.str(), true, this));
+
+        m_PanelManager->AddPanel<RTPlot>(Oak::PanelCategory::VIEW, ss.str().c_str(), true);
     }
 
     void UI::SetRelativeMousePos()
     {
         ImGuiIO& io = ImGui::GetIO();
 
-        int x = ImGui::GetIO().MousePos.x;
-        int y = ImGui::GetIO().MousePos.y;
+        float x = ImGui::GetIO().MousePos.x;
+        float y = ImGui::GetIO().MousePos.y;
         int win_w = Oak::Application::Get().GetWindow().GetWidth();
         int win_h = Oak::Application::Get().GetWindow().GetHeight();
         int win_x = Oak::Application::Get().GetWindow().GetPosX();
         int win_y = Oak::Application::Get().GetWindow().GetPosY();
-        
-        m_RelativeMousePos = ImVec2((float)(x-win_x) / (float)win_w, (float)(y - win_y) / (float)win_h);
+
+        m_RelativeMousePos = ImVec2((float)(x - win_x) / (float)win_w, (float)(y - win_y) / (float)win_h);
 
 
 
@@ -222,11 +216,7 @@ void DrawCanvas()
 
         switch (e.GetKeyCode())
         {
-        case Oak::Key::D1:
-        {
-            if (control) GetPanel(1)->Toggle();
-            break;
-        }
+
         case Oak::Key::N:
         {
             if (control) NewFile();
@@ -248,7 +238,7 @@ void DrawCanvas()
         }
         case Oak::Key::E:
         {
-            GetPanel("Explorer")->Toggle();
+            if (control && shift) m_PanelManager->TogglePanel(FILE_EXPLORER_PANEL);
             break;
         }
 
@@ -268,7 +258,7 @@ void DrawCanvas()
 
     void UI::OpenFile()
     {
-        std::string filepath = Oak::FileDialogs::OpenFile("All Files (*.*)\0*.*\0");
+        std::filesystem::path filepath = Oak::FileSystem::OpenFileDialog("All Files (*.*)\0*.*\0");
         if (!filepath.empty())
         {
             // handle the open file here
@@ -290,7 +280,7 @@ void DrawCanvas()
 
     void UI::SaveFileAs()
     {
-        std::string filepath = Oak::FileDialogs::SaveFile("All Files (*.*)\0*.*\0");
+        std::filesystem::path filepath = Oak::FileSystem::SaveFileDialog("All Files (*.*)\0*.*\0");
         if (!filepath.empty())
         {
             OAK_INFO("Save File As {}", filepath);
@@ -311,6 +301,7 @@ void DrawCanvas()
 
         //}
     }
+    
     void UI::UpdateWindowPos()
     {
         // if the right part of the frame is clicke
@@ -330,46 +321,292 @@ void DrawCanvas()
         Oak::Application::Get().GetWindow().Move(dx, dy);
     }
 
-
-    void UI::SetGlobalStyle()
+    void UI::DrawMenu()
     {
-        ImGuiStyle& style = ImGui::GetStyle();
-        style.FramePadding = ImVec2(5.0f, 5.0f);
-        style.FrameBorderSize = 0.0f;
-        style.WindowPadding = ImVec2(0.0f, 0.0f);
-        style.WindowBorderSize = 0.0f;
-        style.TabRounding = 0.0f;
-        style.ScrollbarRounding = 0.0f;
+        ImGuiViewport* viewport = ImGui::GetMainViewport();
+        ImGuiIO& io = ImGui::GetIO();
 
-        auto& colors = ImGui::GetStyle().Colors;
-        colors[ImGuiCol_WindowBg] = ImVec4{ 0.1f, 0.105f, 0.11f, 1.0f };
-        // Headers
-        colors[ImGuiCol_Header] = ImVec4{ 0.2f, 0.205f, 0.21f, 1.0f };
-        colors[ImGuiCol_HeaderHovered] = ImVec4{ 0.3f, 0.305f, 0.31f, 1.0f };
-        colors[ImGuiCol_HeaderActive] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
+        int style_pop_count = 0;
+        int color_pop_count = 0;
 
-        // Buttons
-        colors[ImGuiCol_Button] = ImVec4{ 0.2f, 0.205f, 0.21f, 1.0f };
-        colors[ImGuiCol_ButtonHovered] = ImVec4{ 0.3f, 0.305f, 0.31f, 1.0f };
-        //colors[ImGuiCol_ButtonHovered] = ImVec4{ 0.1f, 0.105f, 0.11f, 1.0f };
-        colors[ImGuiCol_ButtonActive] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
-        // Frame BG
-        colors[ImGuiCol_FrameBg] = ImVec4{ 0.2f, 0.205f, 0.21f, 1.0f };
-        colors[ImGuiCol_FrameBgHovered] = ImVec4{ 0.3f, 0.305f, 0.31f, 1.0f };
-        colors[ImGuiCol_FrameBgActive] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
-        // Tabs
-        colors[ImGuiCol_Tab] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
-        colors[ImGuiCol_TabHovered] = ImVec4{ 0.38f, 0.3805f, 0.381f, 1.0f };
-        colors[ImGuiCol_TabActive] = ImVec4{ 0.28f, 0.2805f, 0.281f, 1.0f };
-        colors[ImGuiCol_TabUnfocused] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
-        colors[ImGuiCol_TabUnfocusedActive] = ImVec4{ 0.2f, 0.205f, 0.21f, 1.0f };
-        // Title
-        //colors[ImGuiCol_TitleBg] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
-        //colors[ImGuiCol_TitleBgActive] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
-        //colors[ImGuiCol_TitleBgCollapsed] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
-        colors[ImGuiCol_TitleBg] = colors[ImGuiCol_FrameBg];
-        colors[ImGuiCol_TitleBgActive] = colors[ImGuiCol_FrameBg];
-        colors[ImGuiCol_TitleBgCollapsed] = colors[ImGuiCol_FrameBg];
+        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(7.0f, 7.0f)); style_pop_count++;
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(5.0f, 5.0f)); style_pop_count++;
+
+        ImGui::PushStyleColor(ImGuiCol_Button, m_Style.Colors[ImGuiCol_MenuBarBg]); color_pop_count++;
+      
+        
+        ImGuiWindowFlags ui_flags = ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_MenuBar;
+
+        if (ImGui::BeginViewportSideBar("##MAINMENU", viewport, ImGuiDir_Up, ImGui::GetFrameHeight(), ui_flags))
+        {       
+                if (ImGui::IsWindowFocused() && ImGui::IsMouseDown(ImGuiMouseButton_Left))
+                {
+                    ImVec2 current_pos = io.MousePos;
+                    ImVec2 last_pos = GetLastMousePos();
+                    ImVec2 delta_mouse = io.MouseDelta;
+                    float x = GetRelativeMousePos().x * (float) GetRestoredWidth();
+                    float y = GetRelativeMousePos().y * (float) GetRestoredHeight();
+
+
+                    if (Oak::Application::Get().IsMaximized())
+                    {
+                         // if the window is maximized, add in a buffer to prevent accidentally restoring the window
+                        //if ((std::abs(delta_mouse.x) > 10 || std::abs(delta_mouse.y) > 10))
+                        if ((std::abs(delta_mouse.x) > 10 || std::abs(delta_mouse.y) > 10))
+                        {
+                            OAK_WARN("{}, {}", x, y);
+                            Oak::Application::Get().GetWindow().Restore();
+                            Oak::Application::Get().GetWindow().Move((int)(current_pos.x -x), (int)(current_pos.y)-y);
+                           // Oak::Application::Get().GetWindow().MoveDelta(delta_mouse.x, delta_mouse.y);
+                        }
+                    } else {
+                        Oak::Application::Get().GetWindow().MoveDelta(delta_mouse.x, delta_mouse.y);
+                        //Oak::Application::Get().GetWindow().Move(x, y);
+                    }
+
+                    //Oak::Application::Get().GetWindow().Move(current_pos.x- clicked_pos.x, current_pos.y - clicked_pos.y);
+                }
+
+                if (ImGui::IsWindowFocused() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
+                {
+                        if (Oak::Application::Get().IsMaximized()) Oak::Application::Get().GetWindow().Restore();
+                        else if (Oak::Application::Get().IsRestored()) Oak::Application::Get().GetWindow().Maximize();
+                }
+
+
+            if (ImGui::BeginMenuBar())
+            {
+                int pad = 8; // padding around the image texture displayed on the button
+                float size = ImGui::GetFrameHeight() - 2.0f * pad; // want the button to fill the frame so the image size is the frame height - 2x padding
+                ImGui::SetCursorPosX(0.0f);
+                ImGui::ImageButton((ImTextureID)Resources::AppLogo->GetRendererID(), ImVec2(24, 16), ImVec2(0, 0), ImVec2(1, 1), pad);
+
+                if (ImGui::BeginMenu("FILE"))
+                {
+                    if (ImGui::MenuItem("New", "Ctrl+N"))
+                        NewFile();
+                    if (ImGui::MenuItem("Open...", "Ctrl+O"))
+                        OpenFile();
+                    if (ImGui::MenuItem("Save", "Ctrl+S"))
+                        SaveFile();
+                    if (ImGui::MenuItem("Save As...", "Ctrl+Shift+S"))
+                        SaveFileAs();
+                    if (ImGui::MenuItem("Close"))
+                        CloseFile();
+                    ImGui::Separator();
+                    if (ImGui::BeginMenu("Recent Files"))
+                    {
+                        ImGui::MenuItem("example_file_1.csv");
+                        // for each file in recent file stack ...
+                        ImGui::EndMenu();
+                    }
+                    ImGui::Separator();
+                    if (ImGui::MenuItem("Exit", "Alt+F4"))
+                        Oak::Application::Get().Close();
+                    ImGui::EndMenu();
+                }
+                if (ImGui::BeginMenu("VIEW"))
+                {
+                    for (auto& [id, panelData] : m_PanelManager->GetPanels(Oak::PanelCategory::VIEW))
+                    {
+
+                        OAK_WARN("Adding Panel {}:{} to menu with state {}", panelData.ID, panelData.Name, panelData.IsOpen);
+                        ImGui::MenuItem(panelData.Name, nullptr, &panelData.IsOpen);
+                    }
+                    ImGui::EndMenu();
+                }
+                if (ImGui::BeginMenu("OPTIONS"))
+                {
+                    bool vsync = Oak::Application::Get().GetWindow().IsVSync();
+                    ImGui::MenuItem("VSync                ", NULL, &vsync);
+                    Oak::Application::Get().GetWindow().SetVSync(vsync);
+                    ImGui::EndMenu();
+                }
+                if (ImGui::BeginMenu("TOOLS"))
+                {
+                    for (auto& [id, panelData] : m_PanelManager->GetPanels(Oak::PanelCategory::TOOLS))
+                    {
+
+                        OAK_WARN("Adding Panel {}:{} to menu with state {}", panelData.ID, panelData.Name, panelData.IsOpen);
+                        ImGui::MenuItem(panelData.Name, nullptr, &panelData.IsOpen);
+                    }
+                    ImGui::EndMenu();
+                }
+                if (ImGui::BeginMenu("HELP"))
+                {
+                    for (auto& [id, panelData] : m_PanelManager->GetPanels(Oak::PanelCategory::HELP))
+                    {
+
+                        OAK_WARN("Adding Panel {}:{} to menu with state {}", panelData.ID, panelData.Name, panelData.IsOpen);
+                        ImGui::MenuItem(panelData.Name, nullptr, &panelData.IsOpen);
+                    }
+                    ImGui::EndMenu();
+                }
+
+                // window control buttons with no spacing
+                ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0.0f, 0.0f));
+                // reposition cursor to draw the right side
+                ImGui::SetCursorPosX(ImGui::GetContentRegionMax().x - 3.0f * (size + 2.0f * pad));
+
+                if (ImGui::ImageButton((ImTextureID)Resources::MinimizeIcon->GetRendererID(), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), pad))
+                {
+                    Oak::Application::Get().GetWindow().Minimize();
+                }
+                if (Oak::Application::Get().IsRestored())
+                {
+                    if (ImGui::ImageButton((ImTextureID)Resources::MaximizeIcon->GetRendererID(), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), pad))
+                        Oak::Application::Get().GetWindow().Maximize();
+                }
+                if (Oak::Application::Get().IsMaximized())
+                {
+                    if (ImGui::ImageButton((ImTextureID)Resources::RestoreIcon->GetRendererID(), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), pad))
+                        Oak::Application::Get().GetWindow().Restore();
+                }
+                if (ImGui::ImageButton((ImTextureID)Resources::CloseIcon->GetRendererID(), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), pad))
+                    Oak::Application::Get().Close();
+                ImGui::PopStyleVar(); // ItemSpacing
+                ImGui::EndMenuBar();
+            }
+            if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
+            {
+                OAK_INFO("Item clicked");
+            }
+            ImGui::End();
+        }
+
+        ImGui::PopStyleVar(style_pop_count);
+        ImGui::PopStyleColor(color_pop_count);
+
+
+    }
+
+    void UI::DrawSidebar()
+    {
+        int style_pop_count = 0;
+        int color_pop_count = 0; 
+        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(10.0f, 10.0f));    style_pop_count++;
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(1.0f, 1.0f));     style_pop_count++;
+        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(5.0f, 5.0f));       style_pop_count++;
+        ImGui::PushStyleColor(ImGuiCol_Button, m_Style.Colors[ImGuiCol_MenuBarBg]); color_pop_count++;
+        ImGui::PushStyleColor(ImGuiCol_WindowBg, m_Style.Colors[ImGuiCol_MenuBarBg]); color_pop_count++;
+
+        
+        
+        ImGuiViewport* viewport = ImGui::GetMainViewport();
+        ImGuiWindowFlags ui_flags = ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_MenuBar;
+        
+        if (ImGui::BeginViewportSideBar("##SIDEBAR", viewport, ImGuiDir_Left, 47.0f, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_MenuBar))
+        {
+            float size = ImGui::GetContentRegionAvail().x - 10.0f;
+            if (ImGui::BeginMenuBar())
+            {
+
+                /*float size_y = ImGui::GetFrameHeight() - 25.0f;
+                ImGui::SetCursorPosY((ImGui::GetFrameHeight()- size_y) * 0.5f);
+                */
+
+                ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f) - (size * 0.5f));
+                if (ImGui::ImageButton((ImTextureID)Resources::MenuIcon->GetRendererID(), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.0f, 0.0f, 0.0f), ImVec4(1, 1, 1, 0.5f)))
+                {
+                    //GetParent()->GetPanel("Menu")->Toggle();
+                }
+                ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f) - (size * 0.5f));
+
+            }
+            ImGui::EndMenuBar();
+            {
+                ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f) - (size * 0.5f));
+                if (ImGui::ImageButton((ImTextureID)Resources::ExplorerIcon->GetRendererID(), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.0f, 0.0f, 0.0f), ImVec4(1, 1, 1, 0.5f)))
+                {
+                    //GetParent()->GetPanel("Explorer")->Toggle();
+                    m_PanelManager->TogglePanel(FILE_EXPLORER_PANEL);
+                    //OAK_WARN("{}", GetParent()->GetPanel("Explorer")->Visibility());
+                }
+
+                if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
+                {
+                    ImGui::SetTooltip("Ctrl+Shit+E");
+                }
+
+                ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f) - (size * 0.5f));
+                if (ImGui::ImageButton((ImTextureID)Resources::ConnectionIcon->GetRendererID(), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.0f, 0.0f, 0.0f), ImVec4(1, 1, 1, 0.5f)))
+                {
+                    if (!m_PanelManager->IsPanelOpen(NODE_EDITOR))
+                        m_PanelManager->TogglePanel(NODE_EDITOR);
+                    
+                    ImGui::SetWindowFocus(m_PanelManager->GetPanelName(NODE_EDITOR));
+                    //GetParent()->GetPanel("Configuration")->Toggle();
+                    //ImGui::SetWindowFocus("Testing Module");
+                }
+
+                ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f) - (size * 0.5f));
+                if (ImGui::ImageButton((ImTextureID)Resources::ChartIcon->GetRendererID(), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.0f, 0.0f, 0.0f), ImVec4(1, 1, 1, 0.5f)))
+                {
+                    //if (m_show_simple_plot)
+                    //	ImGui::SetWindowFocus("plot1");
+                    //else
+                    //	m_show_simple_plot = !m_show_simple_plot;
+                }
+
+                ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f) - (size * 0.5f));
+                if (ImGui::ImageButton((ImTextureID)Resources::ConsoleIcon->GetRendererID(), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.0f, 0.0f, 0.0f), ImVec4(1, 1, 1, 0.5f)))
+                {
+                    //GetParent()->GetPanel("Log")->Toggle();
+                    //m_show_app_log = !m_show_app_log;
+                }
+
+                ImGui::SetCursorPosY((ImGui::GetWindowContentRegionMax().y) - 2 * (size + ImGui::GetStyle().FramePadding.y));
+                ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f) - (size * 0.5f));
+                if (ImGui::ImageButton((ImTextureID)Resources::AddPlotIcon->GetRendererID(), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.0f, 0.0f, 0.0f), ImVec4(1, 1, 1, 0.5f)))
+                {
+                    //GetParent()->AddPlot();
+                }
+
+                ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f) - (size * 0.5f));
+                if (ImGui::ImageButton((ImTextureID)Resources::SettingsIcon->GetRendererID(), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.0f, 0.0f, 0.0f), ImVec4(1, 1, 1, 0.5f)))
+                {
+                    //GetParent()->GetPanel("Settings")->Toggle();
+                }
+            }
+        ImGui::End();
+        }
+      
+        ImGui::PopStyleVar(style_pop_count);
+        ImGui::PopStyleColor(color_pop_count);
+    
+    }
+
+    void UI::DrawStatusBar()
+    {
+
+        int style_pop_count = 0;
+        int color_pop_count = 0;
+
+        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(5.0f, 5.0f)); style_pop_count++;
+        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(1.0f, 1.0f)); style_pop_count++;
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(5.0f, 5.0f)); style_pop_count++;
+
+
+        ImGuiViewport* viewport = ImGui::GetMainViewport();
+        ImGuiWindowFlags ui_flags = ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoBackground;
+        if (ImGui::BeginViewportSideBar("##STATUSBAR", viewport, ImGuiDir_Down, ImGui::GetFrameHeight(), ui_flags))
+        {
+            if (ImGui::BeginMenuBar())
+            {
+                ImGui::Text("File: ");
+                //if (!m_CurrentWorkingFile.empty()) ImGui::Text(m_CurrentWorkingFile.c_str());
+                //else ImGui::Text("No file loaded ...");
+                std::string status_text = "Status: ";// +m_StatusStr;
+                ImGui::SetCursorPosX(ImGui::GetCursorPosX() + ImGui::GetContentRegionAvail().x - ImGui::CalcTextSize(status_text.c_str()).x - 7.0f);
+                ImGui::Text(status_text.c_str());
+
+                ImGui::EndMenuBar();
+            }
+            ImGui::End();
+        }
+
+        ImGui::PopStyleVar(style_pop_count);
+        ImGui::PopStyleColor(color_pop_count);
 
     }
 

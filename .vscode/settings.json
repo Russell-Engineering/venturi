@@ -84,7 +84,8 @@
         "stop_token": "cpp",
         "thread": "cpp",
         "variant": "cpp",
-        "bitset": "cpp"
+        "bitset": "cpp",
+        "queue": "cpp"
     },
     "cmake.configureOnOpen": true
 }

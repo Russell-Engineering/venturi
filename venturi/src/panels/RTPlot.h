@@ -26,11 +26,12 @@ namespace Venturi
     class RTPlot : public Oak::Panel
     {
     public:
+        RTPlot() {}
         RTPlot(const std::string& name, bool open, UI* parent);
         ~RTPlot() = default;
 
-        void SetLocalStyle();
-        void OnUIRender(bool* p_open);
+        void PushLocalStyle();
+        void OnUIRender(const char* name, bool& open);
 
     private:
         UI* m_Parent;

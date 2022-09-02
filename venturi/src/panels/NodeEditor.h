@@ -8,11 +8,12 @@ namespace Venturi
     class NodeEditor : public Oak::Panel
     {
     public:
+        NodeEditor();
         NodeEditor(const std::string& name, bool open, UI* parent);
         ~NodeEditor() = default;
 
-        void SetLocalStyle() override;
-        void OnUIRender(bool* p_open) override;
+        void PushLocalStyle() override;
+        void OnUIRender(const char* name, bool& open) override;
 
         void AddNode();
         void PushNode(Oak::Node* Node);

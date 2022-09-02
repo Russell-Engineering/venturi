@@ -1,6 +1,8 @@
 #include "panels/ExplorerPanel.h"
 #include "ImGui/imgui.h"
 
+#include "resources.h"
+
 namespace Venturi
 {
 	struct DirectoryTreeItem
@@ -42,30 +44,27 @@ namespace Venturi
 
 
 	ExplorerPanel::ExplorerPanel(const std::string& name, bool show, UI* parent)
-		: Oak::Panel(name, show), m_Parent(parent), m_expanded(true)
+		: Oak::Panel(), m_Parent(parent), m_expanded(true)
 	{
-		m_RefreshIcon = Oak::Texture2D::Create("assets/textures/icons8-restart-16.png");
-		m_NewFileIcon = Oak::Texture2D::Create("assets/textures/icons8-add-file-16.png");
-		m_NewDirIcon = Oak::Texture2D::Create("assets/textures/icons8-add-folder-16.png");
+
 	}
 
-	void ExplorerPanel::SetLocalStyle()
+	void ExplorerPanel::PushLocalStyle()
 	{
-		ImGuiStyle& style = ImGui::GetStyle();
-		style.WindowPadding = ImVec2(0.0f, 0.0f);
-		style.FramePadding = ImVec2(2.0f, 2.0f);
-		style.FrameBorderSize = 0.0f;
-		style.WindowBorderSize = 0.0f;
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f)); m_StylePopCount++;
+		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(2.0f, 2.0f)); m_StylePopCount++;
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize,  0.0f); m_StylePopCount++;
+		ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize,  0.0f); m_StylePopCount++;
 	}
 
 
-	void ExplorerPanel::OnUIRender(bool* open)
+	void ExplorerPanel::OnUIRender(const char *name, bool& open)
 
 	{
 
 		const std::string& directoryPath = Oak::Application::Get().GetSpecification().workingDirectory;
 
-		ImGui::Begin(GetName().c_str(), open);
+		ImGui::Begin(name, &open);
 
 		
 		ImGui::SetNextItemOpen(m_expanded);
@@ -82,7 +81,7 @@ namespace Venturi
 			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0.0f, 0.0f));
 			ImGui::SameLine(ImGui::GetContentRegionAvail().x - 3.0*(size+2*pad));
 			ImGui::BeginChild("##REFRESH_EXPLORER", ImVec2(3.0*(size+2.0*pad), (size+2.0*pad)));
-			ImGui::ImageButton((ImTextureID)m_RefreshIcon->GetRendererID(), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), pad);
+			ImGui::ImageButton((ImTextureID)Resources::RefreshIcon->GetRendererID(), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), pad);
 		
 			if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
 			{
@@ -90,7 +89,7 @@ namespace Venturi
 			}
 
 			ImGui::SameLine();
-			if (ImGui::ImageButton((ImTextureID)m_NewFileIcon->GetRendererID(), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), pad))
+			if (ImGui::ImageButton((ImTextureID)Resources::NewFileIcon->GetRendererID(), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), pad))
 			{
 				// new file to explorer
 				// prompt for name
@@ -101,7 +100,7 @@ namespace Venturi
 			}
 
 			ImGui::SameLine();
-			if (ImGui::ImageButton((ImTextureID)m_NewDirIcon->GetRendererID(), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), pad))
+			if (ImGui::ImageButton((ImTextureID)Resources::NewDirIcon->GetRendererID(), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), pad))
 			{
 				// new directory to explorer
 				// prompt for name
@@ -134,6 +133,11 @@ namespace Venturi
 				else //if (!(selection_mask & (1 << clickState.second))) // Depending on selection behavior you want, may want to preserve selection when clicking on item that is part of the selection
 					selection_mask = 1 << clickState.second;           // Click to single-select
 			}
+		}
+
+		if (ImGui::CollapsingHeader("OPEN FILES"))
+		{
+			
 		}
 
 

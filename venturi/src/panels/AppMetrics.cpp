@@ -4,17 +4,17 @@
 namespace Venturi
 {
     AppMetrics::AppMetrics(const std::string name, bool open, UI* parent)
-        : Panel(name, open), m_Parent(parent)
+        : Panel(), m_Parent(parent)
     {
 
     }
 
-    void AppMetrics::SetLocalStyle()
+    void AppMetrics::PushLocalStyle()
     {
     }
 
-    void AppMetrics::OnUIRender(bool* p_open)
+    void AppMetrics::OnUIRender(const char* name, bool& open)
     {
-        ImGui::ShowMetricsWindow(p_open);
+        ImGui::ShowMetricsWindow(&open);
     }
 }

@@ -5,18 +5,18 @@ namespace Venturi
 {
 
     RTPlot::RTPlot(const std::string& name, bool open, UI* parent)
-        : Panel(name, open), m_Parent(parent)
+        : Panel(), m_Parent(parent)
     {
     }
 
-    void RTPlot::SetLocalStyle()
+    void RTPlot::PushLocalStyle()
     {
     }
 
-    void RTPlot::OnUIRender(bool* p_open)
+    void RTPlot::OnUIRender(const char* name, bool& open)
     {
 
-        ImGui::Begin(GetName().c_str(), p_open);
+        ImGui::Begin(name, &open);
         ImGui::BulletText("Move your mouse to change the data!");
         ImGui::BulletText("This example assumes 60 FPS. Higher FPS requires larger buffer size.");
         

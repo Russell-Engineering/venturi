@@ -1,4 +1,5 @@
 #pragma once
+
 #include "Oak.h"
 #include "ImGui/imgui.h"
 
@@ -10,18 +11,24 @@ namespace Venturi
     public:
 
         UI();
-        virtual ~UI() = default;
-        virtual void OnAttach() override; // called when layer is pushed to layerstack
-        virtual void OnDetach() override; // called when layer is popped from layerstack
+
+        void OnAttach() override; // called when layer is pushed to layerstack
+        void OnDetach() override; // called when layer is popped from layerstack
         
         void OnUpdate(Oak::Timestep ts) override; // called every frame, use this to only clear the buffer for now
-        virtual void OnUIRender() override; // called every frame to draw ImGui ui, this is called by the engine between ImGuiLayer::Begin() and End() calls, which creates the new ImGui frames for us. 
+        void OnUIRender() override; // called every frame to draw ImGui ui, this is called by the engine between ImGuiLayer::Begin() and End() calls, which creates the new ImGui frames for us. 
         void OnEvent(Oak::Event& e) override;
         
     
+        void LoadStyle(const std::string& filepath, const std::string& name);
+        void SaveStyle(const std::string& filepath, const std::string& name);
         void SetGlobalStyle();
-        void PushPanel(Oak::Panel* panel);
-        void QueuePanel(Oak::Panel* panel);
+
+        // permanent UI features
+        //void DrawCanvas();
+        void DrawMenu();
+        void DrawSidebar();
+        void DrawStatusBar();
 
         void AddPlot();
         void NewFile();
@@ -40,18 +47,21 @@ namespace Venturi
         //void SetRelativeMousePos(float x, float y) { m_RelativeMousePos.x = x; m_RelativeMousePos.y = y; }
         void SetRelativeMousePos();
 
-        Oak::Panel* GetPanel(std::string name);
-        Oak::Panel* GetPanel(uint32_t id);
-        Oak::PanelStack* GetPanelStack() {return &m_PanelStack; }
+        inline Oak::PanelManager& GetPanelManager() { return *m_PanelManager; }
 
+
+    
     private:
+        ImGuiStyle m_Style;
+        
         uint32_t m_plotcount;
         uint32_t m_RestoredWidth=1600;
         uint32_t m_RestoredHeight=900;
         ImVec2 m_LastMousePos; 
         ImVec2 m_RelativeMousePos;
-        Oak::PanelStack m_PanelStack;
-        Oak::PanelStack m_PanelQueue;
+       
+        Oak::Scope<Oak::PanelManager> m_PanelManager;
+       
         bool OnKeyPressed(Oak::KeyPressedEvent& e);
         bool OnMouseButtonPressed(Oak::MouseButtonPressedEvent& e);
         bool OnMouseButtonReleased(Oak::MouseButtonReleasedEvent& e);

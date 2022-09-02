@@ -5,26 +5,19 @@
 
 namespace Venturi
 {
-    DemoPanels::DemoPanels(const std::string& name, bool open, UI* parent)
-        : Oak::Panel(name, open), m_Parent(parent)
+
+    void DemoPanels::PushLocalStyle()
     {
-        OAK_TRACE("Creating Demo Panel named {} with id {}", GetName(), GetID());
+        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(5.0f, 5.0f)); m_StylePopCount++;
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(5.0f, 5.0f)); m_StylePopCount++;
+        ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0.0f); m_StylePopCount++;
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f); m_StylePopCount++;
     }
 
-    void DemoPanels::SetLocalStyle()
+    void DemoPanels::OnUIRender(const char*, bool& open)
     {
-		ImGuiStyle& style = ImGui::GetStyle();
-		style.FramePadding = ImVec2(5.0f, 5.0f);
-		style.FrameBorderSize = 0.0f;
-		style.WindowPadding = ImVec2(5.0f, 5.0f);
-		style.WindowBorderSize = 0.0f;
-    }
-
-    void DemoPanels::OnUIRender(bool* open)
-    {
-        ImGui::ShowDemoWindow(open);
-        ImPlot::ShowDemoWindow(open);
-
+        ImGui::ShowDemoWindow(&open);
+        ImPlot::ShowDemoWindow(&open);
     }
 
 }

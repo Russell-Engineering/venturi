@@ -110,6 +110,11 @@ vendor/*/bin
 vendor/*/bin-int
 vendor/implot/Makefile
 
+logs
+*.log
+venturi/*.log
+venturi/logs
+venturi/logs/*.log
 venturi/bin
 venturi/build
 venturi/Makefile
@@ -122,5 +127,6 @@ venturi/*.make
 *.vcxproj.filters
 *.sln
 
+#log files
 
 # End of https://www.toptal.com/developers/gitignore/api/c++,visualstudiocode,c,premake-gmake

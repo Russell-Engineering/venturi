@@ -9,14 +9,11 @@ namespace Venturi
     class DemoPanels : public Oak::Panel
     {
     public:
-        DemoPanels(const std::string& name, bool open, UI* parent);
+        DemoPanels() {}
         ~DemoPanels() = default;
 
-        void SetLocalStyle() override;
-        void OnUIRender(bool* open) override;
-        UI* GetParent() { return m_Parent; }
+        void PushLocalStyle() override;
+        void OnUIRender(const char* name, bool& open) override;
     
-    private:
-        UI* m_Parent = nullptr;
     };
 }

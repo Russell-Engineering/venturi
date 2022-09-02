@@ -1,0 +1,99 @@
+THEME: User Defined
+STYLE:
+  Alpha: 1
+  DisabledAlpha: 0.600000024
+  WindowPadding: [0, 0]
+  WindowRounding: 0
+  WindowBorderSize: 0
+  WindowMinSize: [32, 32]
+  WindowTitleAlign: [0, 0.5]
+  WindowMenuButtonPosition: 0
+  ChildRounding: 0
+  ChildBorderSize: 1
+  PopupRounding: 0
+  PopupBorderSize: 1
+  FramePadding: [5, 5]
+  FrameRounding: 0
+  FrameBorderSize: 0
+  ItemSpacing: [8, 4]
+  ItemInnerSpacing: [4, 4]
+  CellPadding: [4, 2]
+  TouchExtraPadding: [0, 0]
+  IndentSpacing: 21
+  ColumnsMinSpacing: 6
+  ScrollbarSize: 14
+  ScrollbarRounding: 0
+  GrabMinSize: 12
+  GrabRounding: 0
+  LayoutAlign: 0.5
+  LogSliderDeadzone: 4
+  TabRounding: 0
+  TabBorderSize: 0
+  TabMinWidthForCloseButton: 0
+  ColorButtonPosition: 1
+  ButtonTextAlign: [0.5, 0.5]
+  SelectableTextAlign: [0, 0]
+  DisplayWindowPadding: [19, 19]
+  DisplaySafeAreaPadding: [3, 3]
+  MouseCursorScale: 1
+  AntiAliasedLines: true
+  AntiAliasedLinesUseTex: true
+  AntiAliasedFill: true
+  CurveTessellationTol: 1.25
+  CircleTessellationMaxError: 0.300000012
+COLORS:
+  ImGuiCol_Text: [1, 1, 1, 1]
+  ImGuiCol_TextDisabled: [0.5, 0.5, 0.5, 1]
+  ImGuiCol_WindowBg: [0.1, 0.105, 0.11, 1]
+  ImGuiCol_ChildBg: [0, 0, 0, 0]
+  ImGuiCol_PopupBg: [0.0799999982, 0.0799999982, 0.0799999982, 0.939999998]
+  ImGuiCol_Border: [0.430000007, 0.430000007, 0.5, 0.5]
+  ImGuiCol_BorderShadow: [0, 0, 0, 0]
+  ImGuiCol_FrameBg: [0.200000003, 0.204999998, 0.209999993, 1]
+  ImGuiCol_FrameBgHovered: [0.300000012, 0.305000007, 0.310000002, 1]
+  ImGuiCol_FrameBgActive: [0.150000006, 0.1505, 0.150999993, 1]
+  ImGuiCol_TitleBg: [0.140000001, 0.140000001, 0.140000001, 1]
+  ImGuiCol_TitleBgActive:  [0.140000001, 0.140000001, 0.140000001, 1]
+  ImGuiCol_TitleBgCollapsed:  [0.140000001, 0.140000001, 0.140000001, 1]
+  ImGuiCol_MenuBarBg: [0.140000001, 0.140000001, 0.140000001, 1]
+  ImGuiCol_ScrollbarBg: [0.0199999996, 0.0199999996, 0.0199999996, 0.529999971]
+  ImGuiCol_ScrollbarGrab: [0.310000002, 0.310000002, 0.310000002, 1]
+  ImGuiCol_ScrollbarGrabHovered: [0.409999996, 0.409999996, 0.409999996, 1]
+  ImGuiCol_ScrollbarGrabActive: [0.50999999, 0.50999999, 0.50999999, 1]
+  ImGuiCol_CheckMark: [0.25999999, 0.589999974, 0.980000019, 1]
+  ImGuiCol_SliderGrab: [0.239999995, 0.519999981, 0.879999995, 1]
+  ImGuiCol_SliderGrabActive: [0.25999999, 0.589999974, 0.980000019, 1]
+  ImGuiCol_Button: [0.200000003, 0.204999998, 0.209999993, 1]
+  ImGuiCol_ButtonHovered: [0.300000012, 0.305000007, 0.310000002, 1]
+  ImGuiCol_ButtonActive: [0.150000006, 0.1505, 0.150999993, 1]
+  ImGuiCol_Header: [0.2, 0.205, 0.21, 1]
+  ImGuiCol_HeaderHovered: [0.300000012, 0.305000007, 0.310000002, 1]
+  ImGuiCol_HeaderActive: [0.150000006, 0.1505, 0.150999993, 1]
+  ImGuiCol_Separator: [0.430000007, 0.430000007, 0.5, 0.5]
+  ImGuiCol_SeparatorHovered: [0.100000001, 0.400000006, 0.75, 0.779999971]
+  ImGuiCol_SeparatorActive: [0.100000001, 0.400000006, 0.75, 1]
+  ImGuiCol_ResizeGrip: [0.25999999, 0.589999974, 0.980000019, 0.200000003]
+  ImGuiCol_ResizeGripHovered: [0.25999999, 0.589999974, 0.980000019, 0.670000017]
+  ImGuiCol_ResizeGripActive: [0.25999999, 0.589999974, 0.980000019, 0.949999988]
+  ImGuiCol_Tab: [0.150000006, 0.1505, 0.150999993, 1]
+  ImGuiCol_TabHovered: [0.379999995, 0.380499989, 0.381000012, 1]
+  ImGuiCol_TabActive: [0.280000001, 0.280499995, 0.280999988, 1]
+  ImGuiCol_TabUnfocused: [0.150000006, 0.1505, 0.150999993, 1]
+  ImGuiCol_TabUnfocusedActive: [0.200000003, 0.204999998, 0.209999993, 1]
+  ImGuiCol_DockingPreview: [0.25999999, 0.589999974, 0.980000019, 0.699999988]
+  ImGuiCol_DockingEmptyBg: [0.200000003, 0.200000003, 0.200000003, 1]
+  ImGuiCol_PlotLines: [0.610000014, 0.610000014, 0.610000014, 1]
+  ImGuiCol_PlotLinesHovered: [1, 0.430000007, 0.349999994, 1]
+  ImGuiCol_PlotHistogram: [0.899999976, 0.699999988, 0, 1]
+  ImGuiCol_PlotHistogramHovered: [1, 0.600000024, 0, 1]
+  ImGuiCol_TableHeaderBg: [0.189999998, 0.189999998, 0.200000003, 1]
+  ImGuiCol_TableBorderStrong: [0.310000002, 0.310000002, 0.349999994, 1]
+  ImGuiCol_TableBorderLight: [0.230000004, 0.230000004, 0.25, 1]
+  ImGuiCol_TableRowBg: [0, 0, 0, 0]
+  ImGuiCol_TableRowBgAlt: [1, 1, 1, 0.0599999987]
+  ImGuiCol_TextSelectedBg: [0.25999999, 0.589999974, 0.980000019, 0.349999994]
+  ImGuiCol_DragDropTarget: [1, 1, 0, 0.899999976]
+  ImGuiCol_NavHighlight: [0.25999999, 0.589999974, 0.980000019, 1]
+  ImGuiCol_NavWindowingHighlight: [1, 1, 1, 0.699999988]
+  ImGuiCol_NavWindowingDimBg: [0.800000012, 0.800000012, 0.800000012, 0.200000003]
+  ImGuiCol_ModalWindowDimBg: [0.800000012, 0.800000012, 0.800000012, 0.349999994]

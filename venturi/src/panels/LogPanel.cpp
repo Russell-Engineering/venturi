@@ -5,7 +5,7 @@ namespace Venturi
 {
 
     LogPanel::LogPanel(const std::string& name, bool show, UI* parent)
-        : Oak::Panel(name, show), m_Parent(parent)
+        : Oak::Panel(), m_Parent(parent)
     {
         AutoScroll = true;
         Clear();
@@ -30,18 +30,17 @@ namespace Venturi
                 LineOffsets.push_back(old_size + 1);
     }
 
-    void LogPanel::SetLocalStyle()
+    void LogPanel::PushLocalStyle()
     {
-        ImGuiStyle& style = ImGui::GetStyle();
-        style.FramePadding = ImVec2(5.0f, 5.0f);
-        style.WindowPadding = ImVec2(5.0f, 5.0f);
-        style.FrameBorderSize = 0.0f;
-        style.WindowBorderSize = 0.0f;
+        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(5.0f, 5.0f)); m_StylePopCount++;
+        ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0.0f); m_StylePopCount++;
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(5.0f, 5.0f)); m_StylePopCount++;
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f); m_StylePopCount++;
     }
-    void LogPanel::OnUIRender(bool* p_open = NULL)
+    void LogPanel::OnUIRender(const char* name, bool& open)
     {
 
-        if (!ImGui::Begin("##LOG", p_open, ImGuiWindowFlags_NoTitleBar))
+        if (!ImGui::Begin(name, &open, ImGuiWindowFlags_NoTitleBar))
         {
             ImGui::End();
             return;

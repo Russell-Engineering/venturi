@@ -12,6 +12,9 @@ public:
 	VenturiApp(const Oak::ApplicationSpecification& spec)
 		: Oak::Application(spec)
 	{
+		// load last project
+		
+
 		PushLayer(new Venturi::UI());
 	}
 
@@ -27,7 +30,7 @@ Oak::Application* Oak::CreateApplication(int argc, char** argv)
 	OAK_INFO("Testing OAK_INFO");
 	OAK_WARN("Testing OAK_WARN");
 	OAK_ERROR("Testing OAK_ERROR");
-	OAK_CRITICAL("Testing OAK_CRITICAL");
+	OAK_FATAL_TAG("VENTURI", "Testing OAK_FATAL_TAG");
 
 	Oak::ApplicationSpecification spec;
 	spec.name = "Venturi";
