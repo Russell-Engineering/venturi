@@ -16,6 +16,7 @@ project "venturi"
     includedirs
     {  
         "src", 
+        "../vk/vk/src",
         "../oak/oak/src",
         "../oak/vendor",
         "../oak/vendor/implot",
@@ -30,7 +31,8 @@ project "venturi"
 
     links
     {
-        "oak"
+        "vk",
+        "oak",
     }
 
     filter "system:windows"
