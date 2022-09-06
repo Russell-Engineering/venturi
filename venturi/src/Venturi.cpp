@@ -26,11 +26,7 @@ public:
 
 Oak::Application* Oak::CreateApplication(int argc, char** argv)
 {
-	OAK_TRACE("Testing OAK_TRACE");
-	OAK_INFO("Testing OAK_INFO");
-	OAK_WARN("Testing OAK_WARN");
-	OAK_ERROR("Testing OAK_ERROR");
-	OAK_FATAL_TAG("VENTURI", "Testing OAK_FATAL_TAG");
+
 
 	Oak::ApplicationSpecification spec;
 	spec.name = "Venturi";

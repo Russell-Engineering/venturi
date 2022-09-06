@@ -4,6 +4,7 @@
 #include "imnodes/imnodes.h"
 
 #include "oak/utilities/FileSystem.h"
+#include "oak/console/ConsolePanel.h"
 
 
 #include "UI.h"
@@ -33,6 +34,7 @@ namespace Venturi
 #define ABOUT_PANEL "AboutPanel"
 #define NODE_EDITOR "NodeEditor"
 #define SETTINGS_PANEL "SettingsPanel"
+#define RTPLOT "RTPlot"
 
 #define SHOW true
 #define HIDE false
@@ -78,29 +80,34 @@ namespace Venturi
     {
         Resources::Init();
 
-        Oak::ImGuiStyleSerializer styleSerializer = Oak::ImGuiStyleSerializer(m_Style);
-        if (!styleSerializer.Deserialize("assets/styles/default.style"))
-            OAK_ERROR("could not serialize style");
-        
-        ImGuiStyle& style = ImGui::GetStyle();
-        style = m_Style;
-        OAK_WARN_TAG("UI::OnAttach", "TAB ROUNDING {}", m_Style.TabRounding);
+        UpdateStyle();
 
         // panels
         m_PanelManager = Oak::CreateScope<Oak::PanelManager>();
 
         m_PanelManager->AddPanel<ExplorerPanel>(Oak::PanelCategory::VIEW, FILE_EXPLORER_PANEL, "EXPLORER", HIDE);
-        m_PanelManager->AddPanel<LogPanel>(Oak::PanelCategory::VIEW, EMBEDDED_TERMINAL, "LOG", HIDE);
+        m_PanelManager->AddPanel<Oak::ConsolePanel>(Oak::PanelCategory::VIEW, EMBEDDED_TERMINAL, "LOG", SHOW);
+        m_PanelManager->AddPanel<RTPlot>(Oak::PanelCategory::VIEW, RTPLOT, "RTPLOT", SHOW);
 
         //m_PanelManager->AddPanel<OptionsPanel>(Oak::PanelCategory::EDIT, SETTINGS_PANEL, "Project Settings", false);
         m_PanelManager->AddPanel<OptionsPanel>(Oak::PanelCategory::EDIT, SETTINGS_PANEL, "SETTINGS", HIDE);
         m_PanelManager->AddPanel<NodeEditor>(Oak::PanelCategory::EDIT, NODE_EDITOR, "SETUP", HIDE);
         //m_PanelManager->AddPanel<OptionsPanel>(Oak::PanelCategory::EDIT, SETTINGS_PANEL, "User Preferences", false);
 
-       // m_PanelManager->AddPanel<AppMetrics>(Oak::PanelCategory::TOOLS, APPLICATION_METRICS_PANEL, "APP METRICS", HIDE);
-        //m_PanelManager->AddPanel<DemoPanels>(Oak::PanelCategory::TOOLS, IMGUI_DEMO_PANEL, "DEMOS", HIDE);
+        m_PanelManager->AddPanel<AppMetrics>(Oak::PanelCategory::TOOLS, APPLICATION_METRICS_PANEL, "APP METRICS", HIDE);
+        m_PanelManager->AddPanel<DemoPanels>(Oak::PanelCategory::TOOLS, IMGUI_DEMO_PANEL, "DEMOS", HIDE);
         
         m_PanelManager->AddPanel<AboutPanel>(Oak::PanelCategory::HELP, ABOUT_PANEL, "ABOUT", HIDE);
+
+        OAK_TRACE("Testing OAK_TRACE");
+        OAK_CORE_TRACE("Testing OAK_CORE_TRACE");
+        OAK_INFO("Testing OAK_INFO");
+        OAK_WARN("Testing OAK_WARN");
+        OAK_ERROR("Testing OAK_ERROR");
+        OAK_FATAL_TAG("TEST TAG", "Testing OAK_FATAL");
+
+
+
     }
 
     void UI::OnDetach()
@@ -110,6 +117,16 @@ namespace Venturi
 
     void UI::SetGlobalStyle()
     {
+        ImGuiStyle& style = ImGui::GetStyle();
+        style = m_Style;
+    }
+
+    void UI::UpdateStyle()
+    {
+        Oak::ImGuiStyleSerializer styleSerializer = Oak::ImGuiStyleSerializer(m_Style);
+        if (!styleSerializer.Deserialize("assets/styles/default.style"))
+            OAK_ERROR("could not serialize style");
+
         ImGuiStyle& style = ImGui::GetStyle();
         style = m_Style;
     }
@@ -354,7 +371,6 @@ namespace Venturi
                         //if ((std::abs(delta_mouse.x) > 10 || std::abs(delta_mouse.y) > 10))
                         if ((std::abs(delta_mouse.x) > 10 || std::abs(delta_mouse.y) > 10))
                         {
-                            OAK_WARN("{}, {}", x, y);
                             Oak::Application::Get().GetWindow().Restore();
                             Oak::Application::Get().GetWindow().Move((int)(current_pos.x -x), (int)(current_pos.y)-y);
                            // Oak::Application::Get().GetWindow().MoveDelta(delta_mouse.x, delta_mouse.y);
@@ -408,11 +424,7 @@ namespace Venturi
                 if (ImGui::BeginMenu("VIEW"))
                 {
                     for (auto& [id, panelData] : m_PanelManager->GetPanels(Oak::PanelCategory::VIEW))
-                    {
-
-                        OAK_WARN("Adding Panel {}:{} to menu with state {}", panelData.ID, panelData.Name, panelData.IsOpen);
                         ImGui::MenuItem(panelData.Name, nullptr, &panelData.IsOpen);
-                    }
                     ImGui::EndMenu();
                 }
                 if (ImGui::BeginMenu("OPTIONS"))
@@ -420,26 +432,22 @@ namespace Venturi
                     bool vsync = Oak::Application::Get().GetWindow().IsVSync();
                     ImGui::MenuItem("VSync                ", NULL, &vsync);
                     Oak::Application::Get().GetWindow().SetVSync(vsync);
+
+                    if (ImGui::MenuItem("Reload Styles"))
+                        UpdateStyle();
+
                     ImGui::EndMenu();
                 }
                 if (ImGui::BeginMenu("TOOLS"))
                 {
                     for (auto& [id, panelData] : m_PanelManager->GetPanels(Oak::PanelCategory::TOOLS))
-                    {
-
-                        OAK_WARN("Adding Panel {}:{} to menu with state {}", panelData.ID, panelData.Name, panelData.IsOpen);
                         ImGui::MenuItem(panelData.Name, nullptr, &panelData.IsOpen);
-                    }
                     ImGui::EndMenu();
                 }
                 if (ImGui::BeginMenu("HELP"))
                 {
                     for (auto& [id, panelData] : m_PanelManager->GetPanels(Oak::PanelCategory::HELP))
-                    {
-
-                        OAK_WARN("Adding Panel {}:{} to menu with state {}", panelData.ID, panelData.Name, panelData.IsOpen);
                         ImGui::MenuItem(panelData.Name, nullptr, &panelData.IsOpen);
-                    }
                     ImGui::EndMenu();
                 }
 
@@ -482,6 +490,7 @@ namespace Venturi
 
     void UI::DrawSidebar()
     {
+       
         int style_pop_count = 0;
         int color_pop_count = 0; 
         ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(10.0f, 10.0f));    style_pop_count++;
@@ -495,19 +504,18 @@ namespace Venturi
         ImGuiViewport* viewport = ImGui::GetMainViewport();
         ImGuiWindowFlags ui_flags = ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_MenuBar;
         
-        if (ImGui::BeginViewportSideBar("##SIDEBAR", viewport, ImGuiDir_Left, 47.0f, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_MenuBar))
+        float sidebar_width = m_SideBarExpanded ? 147.0f : 47.0f;
+
+        if (ImGui::BeginViewportSideBar("##SIDEBAR", viewport, ImGuiDir_Left, sidebar_width, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_MenuBar))
         {
-            float size = ImGui::GetContentRegionAvail().x - 10.0f;
+            //float size = ImGui::GetContentRegionAvail().x - 10.0f;
+            float size = 37.0f;
             if (ImGui::BeginMenuBar())
             {
-
-                /*float size_y = ImGui::GetFrameHeight() - 25.0f;
-                ImGui::SetCursorPosY((ImGui::GetFrameHeight()- size_y) * 0.5f);
-                */
-
                 ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f) - (size * 0.5f));
-                if (ImGui::ImageButton((ImTextureID)Resources::MenuIcon->GetRendererID(), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.0f, 0.0f, 0.0f), ImVec4(1, 1, 1, 0.5f)))
+                if (ImGui::ImageButton((ImTextureID)Resources::MenuIcon->GetRendererID(), ImVec2(Resources::MenuIcon->GetWidth(), Resources::MenuIcon->GetHeight()), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.0f, 0.0f, 0.0f), ImVec4(1, 1, 1, 0.5f)))
                 {
+                    m_SideBarExpanded ^= true;
                     //GetParent()->GetPanel("Menu")->Toggle();
                 }
                 ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f) - (size * 0.5f));
@@ -516,20 +524,14 @@ namespace Venturi
             ImGui::EndMenuBar();
             {
                 ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f) - (size * 0.5f));
-                if (ImGui::ImageButton((ImTextureID)Resources::ExplorerIcon->GetRendererID(), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.0f, 0.0f, 0.0f), ImVec4(1, 1, 1, 0.5f)))
-                {
-                    //GetParent()->GetPanel("Explorer")->Toggle();
+                if (ImGui::ImageButton((ImTextureID)Resources::ExplorerIcon->GetRendererID(), ImVec2(Resources::MenuIcon->GetWidth(), Resources::MenuIcon->GetHeight()), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.0f, 0.0f, 0.0f), ImVec4(1, 1, 1, 0.5f)))
                     m_PanelManager->TogglePanel(FILE_EXPLORER_PANEL);
-                    //OAK_WARN("{}", GetParent()->GetPanel("Explorer")->Visibility());
-                }
 
                 if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
-                {
                     ImGui::SetTooltip("Ctrl+Shit+E");
-                }
 
                 ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f) - (size * 0.5f));
-                if (ImGui::ImageButton((ImTextureID)Resources::ConnectionIcon->GetRendererID(), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.0f, 0.0f, 0.0f), ImVec4(1, 1, 1, 0.5f)))
+                if (ImGui::ImageButton((ImTextureID)Resources::ConnectionIcon->GetRendererID(), ImVec2(Resources::MenuIcon->GetWidth(), Resources::MenuIcon->GetHeight()), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.0f, 0.0f, 0.0f), ImVec4(1, 1, 1, 0.5f)))
                 {
                     if (!m_PanelManager->IsPanelOpen(NODE_EDITOR))
                         m_PanelManager->TogglePanel(NODE_EDITOR);
@@ -540,7 +542,7 @@ namespace Venturi
                 }
 
                 ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f) - (size * 0.5f));
-                if (ImGui::ImageButton((ImTextureID)Resources::ChartIcon->GetRendererID(), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.0f, 0.0f, 0.0f), ImVec4(1, 1, 1, 0.5f)))
+                if (ImGui::ImageButton((ImTextureID)Resources::ChartIcon->GetRendererID(), ImVec2(Resources::MenuIcon->GetWidth(), Resources::MenuIcon->GetHeight()), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.0f, 0.0f, 0.0f), ImVec4(1, 1, 1, 0.5f)))
                 {
                     //if (m_show_simple_plot)
                     //	ImGui::SetWindowFocus("plot1");
@@ -549,24 +551,19 @@ namespace Venturi
                 }
 
                 ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f) - (size * 0.5f));
-                if (ImGui::ImageButton((ImTextureID)Resources::ConsoleIcon->GetRendererID(), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.0f, 0.0f, 0.0f), ImVec4(1, 1, 1, 0.5f)))
-                {
-                    //GetParent()->GetPanel("Log")->Toggle();
-                    //m_show_app_log = !m_show_app_log;
-                }
+                if (ImGui::ImageButton((ImTextureID)Resources::ConsoleIcon->GetRendererID(), ImVec2(Resources::MenuIcon->GetWidth(), Resources::MenuIcon->GetHeight()), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.0f, 0.0f, 0.0f), ImVec4(1, 1, 1, 0.5f)))
+                    m_PanelManager->TogglePanel(EMBEDDED_TERMINAL);
 
                 ImGui::SetCursorPosY((ImGui::GetWindowContentRegionMax().y) - 2 * (size + ImGui::GetStyle().FramePadding.y));
                 ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f) - (size * 0.5f));
-                if (ImGui::ImageButton((ImTextureID)Resources::AddPlotIcon->GetRendererID(), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.0f, 0.0f, 0.0f), ImVec4(1, 1, 1, 0.5f)))
+                if (ImGui::ImageButton((ImTextureID)Resources::AddPlotIcon->GetRendererID(), ImVec2(Resources::MenuIcon->GetWidth(), Resources::MenuIcon->GetHeight()), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.0f, 0.0f, 0.0f), ImVec4(1, 1, 1, 0.5f)))
                 {
                     //GetParent()->AddPlot();
                 }
 
                 ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f) - (size * 0.5f));
-                if (ImGui::ImageButton((ImTextureID)Resources::SettingsIcon->GetRendererID(), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.0f, 0.0f, 0.0f), ImVec4(1, 1, 1, 0.5f)))
-                {
-                    //GetParent()->GetPanel("Settings")->Toggle();
-                }
+                if (ImGui::ImageButton((ImTextureID)Resources::SettingsIcon->GetRendererID(), ImVec2(Resources::MenuIcon->GetWidth(), Resources::MenuIcon->GetHeight()), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.0f, 0.0f, 0.0f), ImVec4(1, 1, 1, 0.5f)))
+                    m_PanelManager->TogglePanel(SETTINGS_PANEL);
             }
         ImGui::End();
         }
@@ -583,9 +580,8 @@ namespace Venturi
         int color_pop_count = 0;
 
         ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(5.0f, 5.0f)); style_pop_count++;
-        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(1.0f, 1.0f)); style_pop_count++;
+        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(3.0f, 3.0f)); style_pop_count++;
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(5.0f, 5.0f)); style_pop_count++;
-
 
         ImGuiViewport* viewport = ImGui::GetMainViewport();
         ImGuiWindowFlags ui_flags = ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoBackground;

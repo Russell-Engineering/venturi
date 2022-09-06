@@ -17,3 +17,6 @@
 [submodule "oak"]
 	path = oak
 	url = https://github.com/csooriyakumaran/oak
+[submodule "vk"]
+	path = vk
+	url = https://github.com/csooriyakumaran/vk

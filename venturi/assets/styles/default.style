@@ -9,7 +9,7 @@ STYLE:
   WindowTitleAlign: [0, 0.5]
   WindowMenuButtonPosition: 0
   ChildRounding: 0
-  ChildBorderSize: 1
+  ChildBorderSize: 0
   PopupRounding: 0
   PopupBorderSize: 1
   FramePadding: [5, 5]
@@ -49,14 +49,14 @@ COLORS:
   ImGuiCol_PopupBg: [0.0799999982, 0.0799999982, 0.0799999982, 0.939999998]
   ImGuiCol_Border: [0.430000007, 0.430000007, 0.5, 0.5]
   ImGuiCol_BorderShadow: [0, 0, 0, 0]
-  ImGuiCol_FrameBg: [0.200000003, 0.204999998, 0.209999993, 1]
+  ImGuiCol_FrameBg: [0.21, 0.205, 0.21, 1.0]
   ImGuiCol_FrameBgHovered: [0.300000012, 0.305000007, 0.310000002, 1]
   ImGuiCol_FrameBgActive: [0.150000006, 0.1505, 0.150999993, 1]
   ImGuiCol_TitleBg: [0.140000001, 0.140000001, 0.140000001, 1]
   ImGuiCol_TitleBgActive:  [0.140000001, 0.140000001, 0.140000001, 1]
   ImGuiCol_TitleBgCollapsed:  [0.140000001, 0.140000001, 0.140000001, 1]
   ImGuiCol_MenuBarBg: [0.140000001, 0.140000001, 0.140000001, 1]
-  ImGuiCol_ScrollbarBg: [0.0199999996, 0.0199999996, 0.0199999996, 0.529999971]
+  ImGuiCol_ScrollbarBg: [0.0199999996, 0.0199999996, 0.0199999996, 0]
   ImGuiCol_ScrollbarGrab: [0.310000002, 0.310000002, 0.310000002, 1]
   ImGuiCol_ScrollbarGrabHovered: [0.409999996, 0.409999996, 0.409999996, 1]
   ImGuiCol_ScrollbarGrabActive: [0.50999999, 0.50999999, 0.50999999, 1]
@@ -75,11 +75,11 @@ COLORS:
   ImGuiCol_ResizeGrip: [0.25999999, 0.589999974, 0.980000019, 0.200000003]
   ImGuiCol_ResizeGripHovered: [0.25999999, 0.589999974, 0.980000019, 0.670000017]
   ImGuiCol_ResizeGripActive: [0.25999999, 0.589999974, 0.980000019, 0.949999988]
-  ImGuiCol_Tab: [0.150000006, 0.1505, 0.150999993, 1]
+  ImGuiCol_Tab: [0.140000001, 0.140000001, 0.140000001, 1]
   ImGuiCol_TabHovered: [0.379999995, 0.380499989, 0.381000012, 1]
   ImGuiCol_TabActive: [0.280000001, 0.280499995, 0.280999988, 1]
-  ImGuiCol_TabUnfocused: [0.150000006, 0.1505, 0.150999993, 1]
-  ImGuiCol_TabUnfocusedActive: [0.200000003, 0.204999998, 0.209999993, 1]
+  ImGuiCol_TabUnfocused: [0.140000001, 0.140000001, 0.140000001, 1]
+  ImGuiCol_TabUnfocusedActive: [0.140000001, 0.140000001, 0.140000001, 1]
   ImGuiCol_DockingPreview: [0.25999999, 0.589999974, 0.980000019, 0.699999988]
   ImGuiCol_DockingEmptyBg: [0.200000003, 0.200000003, 0.200000003, 1]
   ImGuiCol_PlotLines: [0.610000014, 0.610000014, 0.610000014, 1]

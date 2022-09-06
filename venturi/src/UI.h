@@ -23,6 +23,7 @@ namespace Venturi
         void LoadStyle(const std::string& filepath, const std::string& name);
         void SaveStyle(const std::string& filepath, const std::string& name);
         void SetGlobalStyle();
+        void UpdateStyle();
 
         // permanent UI features
         //void DrawCanvas();
@@ -61,7 +62,8 @@ namespace Venturi
         ImVec2 m_RelativeMousePos;
        
         Oak::Scope<Oak::PanelManager> m_PanelManager;
-       
+        bool m_SideBarExpanded = false;
+
         bool OnKeyPressed(Oak::KeyPressedEvent& e);
         bool OnMouseButtonPressed(Oak::MouseButtonPressedEvent& e);
         bool OnMouseButtonReleased(Oak::MouseButtonReleasedEvent& e);

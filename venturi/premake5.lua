@@ -46,5 +46,6 @@ project "venturi"
         optimize "On"
         
     filter  "configurations:Dist"
+        kind "WindowedApp"    
         defines "OAK_DIST"
         optimize "On"

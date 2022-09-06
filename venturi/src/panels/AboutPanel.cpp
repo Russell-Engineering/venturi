@@ -31,7 +31,7 @@ namespace Venturi
 			ImGui::EndPopup();
 		}
         if (open)
-            ImGui::OpenPopup("About");
+            ImGui::OpenPopup(name);
     }
 
 }
