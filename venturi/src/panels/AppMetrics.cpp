@@ -3,12 +3,6 @@
 
 namespace Venturi
 {
-    AppMetrics::AppMetrics(const std::string name, bool open, UI* parent)
-        : Panel(), m_Parent(parent)
-    {
-
-    }
-
     void AppMetrics::PushLocalStyle()
     {
     }

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "oak.h"
-#include "UI.h"
 
 namespace Venturi
 {
@@ -9,7 +8,6 @@ namespace Venturi
     {
     public:
         NodeEditor();
-        NodeEditor(const std::string& name, bool open, UI* parent);
         ~NodeEditor() = default;
 
         void PushLocalStyle() override;
@@ -20,15 +18,13 @@ namespace Venturi
         void RemoveNode(uint32_t id);
         void AllignVertical(std::vector<Oak::Node*> nodes);
         void AllignHorizontal(std::vector<Oak::Node*> nodes);
-        
+        void DrawToolBar();
 
         Oak::Node* GetNode(uint32_t id);
-        UI* GetParent() { return m_Parent; }
 
 
     private:
         inline static uint32_t m_NodeCount = 0;
-        UI* m_Parent = nullptr;
         Oak::NodeStack m_NodeStack;
 
 

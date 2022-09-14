@@ -3,11 +3,7 @@
 
 namespace Venturi
 {
-    OptionsPanel::OptionsPanel(const std::string& name, bool open, UI* parent)
-        : Panel(), m_Parent(parent)
-    {
-    }
-
+ 
     void OptionsPanel::PushLocalStyle()
     {
     }

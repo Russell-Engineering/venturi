@@ -43,11 +43,6 @@ namespace Venturi
 	};
 
 
-	ExplorerPanel::ExplorerPanel(const std::string& name, bool show, UI* parent)
-		: Oak::Panel(), m_Parent(parent), m_expanded(true)
-	{
-
-	}
 
 	void ExplorerPanel::PushLocalStyle()
 	{

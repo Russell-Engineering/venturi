@@ -5,12 +5,12 @@
 
 namespace Venturi
 {
-    class UI : public Oak::Layer
+    class AppLayer : public Oak::Layer
     {
 
     public:
 
-        UI();
+        AppLayer();
 
         void OnAttach() override; // called when layer is pushed to layerstack
         void OnDetach() override; // called when layer is popped from layerstack

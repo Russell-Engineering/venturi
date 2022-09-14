@@ -34,6 +34,12 @@ project "venturi"
         "vk",
         "oak",
     }
+    
+    defines
+    {
+        "_USE_MATH_DEFINES"
+    }
+
 
     filter "system:windows"
         systemversion "latest"

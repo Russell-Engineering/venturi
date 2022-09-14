@@ -3,13 +3,6 @@
 
 namespace Venturi
 {
-
-    // AboutPanel::AboutPanel(const std::string& name, bool show, UI* parent)
-    //     : Oak::Panel(name, show), m_Parent(parent)
-    // {
-    //     OAK_TRACE("Creating AboutPanel Panel named {} with id {}", GetName(), GetID());
-    // }
-
     void AboutPanel::PushLocalStyle()
     {
         ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(5.0f, 5.0f)); m_StylePopCount++;
@@ -33,5 +26,4 @@ namespace Venturi
         if (open)
             ImGui::OpenPopup(name);
     }
-
 }

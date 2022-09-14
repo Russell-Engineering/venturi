@@ -20,11 +20,18 @@ namespace Venturi
         inline static Oak::Ref<Oak::Texture2D> ChartIcon = nullptr;
         inline static Oak::Ref<Oak::Texture2D> ConsoleIcon = nullptr;
         inline static Oak::Ref<Oak::Texture2D> AddPlotIcon = nullptr;
+        inline static Oak::Ref<Oak::Texture2D> PlusIcon = nullptr;
         inline static Oak::Ref<Oak::Texture2D> SettingsIcon = nullptr;
 
         inline static Oak::Ref<Oak::Texture2D> RefreshIcon = nullptr;
         inline static Oak::Ref<Oak::Texture2D> NewFileIcon = nullptr;
         inline static Oak::Ref<Oak::Texture2D> NewDirIcon = nullptr;
+
+        inline static Oak::Ref<Oak::Texture2D> PlayIcon = nullptr;
+        inline static Oak::Ref<Oak::Texture2D> PauseIcon = nullptr;
+        inline static Oak::Ref<Oak::Texture2D> StopIcon = nullptr;
+        inline static Oak::Ref<Oak::Texture2D> RecordIcon = nullptr;
+        inline static Oak::Ref<Oak::Texture2D> RecordingIcon = nullptr;
 
 
 
@@ -43,12 +50,20 @@ namespace Venturi
             ChartIcon =     LoadTexture("assets/textures/icons8-combo-chart-32.png");
             ConsoleIcon =   LoadTexture("assets/textures/icons8-console-32.png");
             AddPlotIcon =   LoadTexture("assets/textures/icons8-add-new-32.png");
+            PlusIcon =      LoadTexture("assets/textures/icons8-plus-math-32.png");
             SettingsIcon =  LoadTexture("assets/textures/icons8-services-32.png");
 
             RefreshIcon =   LoadTexture("assets/textures/icons8-restart-16.png");
             NewFileIcon =   LoadTexture("assets/textures/icons8-add-file-16.png");
             NewDirIcon =    LoadTexture("assets/textures/icons8-add-folder-16.png");
+            
+            PlayIcon =      LoadTexture("assets/textures/Play.png");
+            PauseIcon =     LoadTexture("assets/textures/Pause.png");
+            StopIcon =      LoadTexture("assets/textures/Stop.png");
+            RecordIcon =      LoadTexture("assets/textures/icons8-record-16.png");
+            RecordingIcon =      LoadTexture("assets/textures/icons8-recording-16.png");
 
+            
 
             OAK_CORE_TRACE_TAG("Resources::Init", "... done");
         }
@@ -66,10 +81,16 @@ namespace Venturi
                 ChartIcon.Reset();
                 ConsoleIcon.Reset();
                 AddPlotIcon.Reset();
+                PlusIcon.Reset();
                 SettingsIcon.Reset();
                 RefreshIcon.Reset();
                 NewFileIcon.Reset();
                 NewDirIcon.Reset();
+                PlayIcon.Reset();
+                PauseIcon.Reset();
+                StopIcon.Reset();
+                RecordIcon.Reset();
+                RecordingIcon.Reset();
 
         }
     private:

@@ -1,7 +1,7 @@
 
 #include "oak.h"
 #include "oak/core/EntryPoint.h"
-#include "UI.h"
+#include "AppLayer.h"
 //#include "layers/Workspace.h"
 
 
@@ -13,9 +13,7 @@ public:
 		: Oak::Application(spec)
 	{
 		// load last project
-		
-
-		PushLayer(new Venturi::UI());
+		PushLayer(new Venturi::AppLayer());
 	}
 
 	VenturiApp::~VenturiApp()
