@@ -50,7 +50,7 @@ namespace Venturi
 
         inline Oak::PanelManager& GetPanelManager() { return *m_PanelManager; }
 
-
+        void AppLayer::UI_ShowPlotCreationPopUp();
     
     private:
         ImGuiStyle m_Style;

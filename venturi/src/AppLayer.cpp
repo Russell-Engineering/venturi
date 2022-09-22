@@ -169,6 +169,7 @@ namespace Venturi
 
         m_PanelManager->OnUIRender();
         SetGlobalStyle();
+        Oak::UI::RenderMessageBoxes();
     }
 
     void AppLayer::OnEvent(Oak::Event& e)
@@ -419,7 +420,7 @@ namespace Venturi
                 float size = ImGui::GetFrameHeight() - 2.0f * pad; // want the button to fill the frame so the image size is the frame height - 2x padding
                 ImGui::SetCursorPosX(0.0f);
                 ImGui::PushStyleColor(ImGuiCol_ButtonHovered, m_Style.Colors[ImGuiCol_MenuBarBg]);
-                Oak::ImageButton(Resources::AppLogo, ImVec2(24, 16), pad);
+                Oak::UI::ImageButton(Resources::AppLogo, ImVec2(24, 16), pad);
                 ImGui::PopStyleColor();
                 //ImGui::ImageButton((ImTextureID)Resources::AppLogo->GetRendererID(), ImVec2(24, 16), ImVec2(0, 0), ImVec2(1, 1), pad);
 
@@ -542,7 +543,7 @@ namespace Venturi
             if (ImGui::BeginMenuBar())
             {
                 ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f) - (size * 0.5f));
-                if (Oak::ImageButton(Resources::MenuIcon, ImVec2(Resources::MenuIcon->GetWidth(), Resources::MenuIcon->GetHeight())))
+                if (Oak::UI::ImageButton(Resources::MenuIcon, ImVec2(Resources::MenuIcon->GetWidth(), Resources::MenuIcon->GetHeight())))
                 {
                     m_SideBarExpanded ^= true;
                     //GetParent()->GetPanel("Menu")->Toggle();
@@ -553,14 +554,14 @@ namespace Venturi
             ImGui::EndMenuBar();
             {
                 ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f) - (size * 0.5f));
-                if (Oak::ImageButton(Resources::ExplorerIcon, ImVec2(Resources::ExplorerIcon->GetWidth(), Resources::ExplorerIcon->GetHeight())))
+                if (Oak::UI::ImageButton(Resources::ExplorerIcon, ImVec2(Resources::ExplorerIcon->GetWidth(), Resources::ExplorerIcon->GetHeight())))
                     m_PanelManager->TogglePanel(FILE_EXPLORER_PANEL);
 
                 if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
                     ImGui::SetTooltip("Ctrl+Shit+E");
 
                 ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f) - (size * 0.5f));
-                if (Oak::ImageButton(Resources::ConnectionIcon, ImVec2(Resources::ConnectionIcon->GetWidth(), Resources::ConnectionIcon->GetHeight())))
+                if (Oak::UI::ImageButton(Resources::ConnectionIcon, ImVec2(Resources::ConnectionIcon->GetWidth(), Resources::ConnectionIcon->GetHeight())))
                 {
                     if (!m_PanelManager->IsPanelOpen(NODE_EDITOR))
                         m_PanelManager->TogglePanel(NODE_EDITOR);
@@ -571,7 +572,7 @@ namespace Venturi
                 }
 
                 ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f) - (size * 0.5f));
-                if (Oak::ImageButton(Resources::ChartIcon, ImVec2(Resources::ChartIcon->GetWidth(), Resources::ChartIcon->GetHeight())))
+                if (Oak::UI::ImageButton(Resources::ChartIcon, ImVec2(Resources::ChartIcon->GetWidth(), Resources::ChartIcon->GetHeight())))
                 {
                     //if (m_show_simple_plot)
                     //	ImGui::SetWindowFocus("plot1");
@@ -580,18 +581,19 @@ namespace Venturi
                 }
 
                 ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f) - (size * 0.5f));
-                if (Oak::ImageButton(Resources::ConsoleIcon, ImVec2(Resources::ConsoleIcon->GetWidth(), Resources::ConsoleIcon->GetHeight())))
+                if (Oak::UI::ImageButton(Resources::ConsoleIcon, ImVec2(Resources::ConsoleIcon->GetWidth(), Resources::ConsoleIcon->GetHeight())))
                     m_PanelManager->TogglePanel(EMBEDDED_TERMINAL);
 
                 ImGui::SetCursorPosY((ImGui::GetWindowContentRegionMax().y) - 2 * (size + ImGui::GetStyle().FramePadding.y));
                 ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f) - (size * 0.5f));
-                if (Oak::ImageButton(Resources::AddPlotIcon, ImVec2(Resources::AddPlotIcon->GetWidth(), Resources::AddPlotIcon->GetHeight())))
+                if (Oak::UI::ImageButton(Resources::AddPlotIcon, ImVec2(Resources::AddPlotIcon->GetWidth(), Resources::AddPlotIcon->GetHeight())))
                 {
-                    AddPlot();
+                    UI_ShowPlotCreationPopUp();
+                    //AddPlot();
                 }
 
                 ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f) - (size * 0.5f));
-                if (Oak::ImageButton(Resources::SettingsIcon, ImVec2(Resources::SettingsIcon->GetWidth(), Resources::SettingsIcon->GetHeight())))
+                if (Oak::UI::ImageButton(Resources::SettingsIcon, ImVec2(Resources::SettingsIcon->GetWidth(), Resources::SettingsIcon->GetHeight())))
                     m_PanelManager->TogglePanel(SETTINGS_PANEL);
             }
         ImGui::End();
@@ -634,5 +636,19 @@ namespace Venturi
         ImGui::PopStyleColor(color_pop_count);
 
     }
-
+    void AppLayer::UI_ShowPlotCreationPopUp()
+    {
+        Oak::UI::ShowMessageBox("Create Plot", []()
+            {
+                PlotSpec settings = {};
+                ImGui::Text("Define Plot Properties");
+                ImGui::Separator();
+                ImGui::InputTextWithHint("##NAME", "Enter plot title.. ", &settings.Name);
+                ImGui::InputTextWithHint("##TITLE", "Enter plot title.. ", &settings.Title);
+                ImGui::InputTextWithHint("##XLABEL", "x-label.. ", &settings.LabelX);
+                ImGui::InputTextWithHint("##YLABEL", "y-label.. ", &settings.LabelY);
+                if (ImGui::Button("OK"))
+                    ImGui::CloseCurrentPopup();
+            }, 600);
+    }
 }

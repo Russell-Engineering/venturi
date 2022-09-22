@@ -1,17 +1,32 @@
-#include "PlotPanel.h"
+﻿#include "PlotPanel.h"
 #include "resources.h"
+
+#include <thread>
 
 namespace Venturi
 {
+	static std::vector<std::thread> s_ThreadPool;
+	static std::mutex mutex;
 	PlotPanel::PlotPanel()
 		: Oak::Panel(), id(++m_idGenerator)
 	{
-		m_clock = Oak::CreateScope<vk::Clock>();
-		m_SigGen = Oak::CreateScope<vk::Signals::SignalGenerator>((vk::Signals::Waveform)m_selectedWaveform);
-		
-		AddSeries(DataSeries<vk::Vec2>(Oak::UUID(), "Trace 1", 25000));
-		AddSeries(DataSeries<vk::Vec2>(Oak::UUID(), "Trace 2", 25000));
-		AddSeries(DataSeries<vk::Vec2>(Oak::UUID(), "Trace 3", 25000));
+
+		vk::Signals::SignalSpec spec = { };
+		AddSeries<SignalDataSeries>(SignalDataSeries("Trace 1", 25000, spec));
+
+		spec.amp = 1.5f;
+		spec.offset = 2.5f;
+		spec.waveform = vk::Signals::SQUARE;
+		AddSeries<SignalDataSeries>(SignalDataSeries("Trace 2", 25000, spec));
+
+		spec.amp = 0.5f;
+		spec.offset = -2.0f;
+		spec.waveform = vk::Signals::TRIANGLE;
+		AddSeries<SignalDataSeries>(SignalDataSeries("Trace 3", 25000, spec));	spec.amp = 0.5f;
+
+		spec.offset = 0.0f;
+		spec.waveform = vk::Signals::RANDOM;
+		AddSeries<SignalDataSeries>(SignalDataSeries("Trace 4", 25000, spec));
 	}
 
 	PlotPanel::~PlotPanel()
@@ -22,6 +37,7 @@ namespace Venturi
 		m_DataSet.clear();
 
 	}
+
 	void PlotPanel::PushLocalStyle()
 	{
 		ImGuiStyle& style = ImGui::GetStyle();
@@ -33,18 +49,22 @@ namespace Venturi
 		ImGui::PushStyleColor(ImGuiCol_Button, style.Colors[ImGuiCol_WindowBg]); m_ColorPopCount++;
 		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, style.Colors[ImGuiCol_WindowBg]); m_ColorPopCount++;
 		ImGui::PushStyleColor(ImGuiCol_ButtonActive, style.Colors[ImGuiCol_WindowBg]); m_ColorPopCount++;
-		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(5,0)); m_StylePopCount++;
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(5,0)); m_StylePopCount++;
+		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(5, 0)); m_StylePopCount++;
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(5, 0)); m_StylePopCount++;
 
 	}
 
-	void PlotPanel::CreatDataSeries()
-	{
-		AddSeries(DataSeries<vk::Vec2>());
-	}
 	
 	void PlotPanel::OnUIRender(const char* name, bool& open)
 	{
+		for (auto& [id, _series] : m_DataSet)
+		{
+			Oak::Ref<SignalDataSeries> series = _series.As<SignalDataSeries>();
+			mutex.lock();
+			series->OnUpdate();
+			mutex.unlock();
+		}
+
 		ImGui::Begin(name, &open);
 		DrawToolBar();
 		if (m_ShowPlotOptions)
@@ -53,68 +73,13 @@ namespace Venturi
 			ImGui::SameLine();
 		}
 
-		ImGui::BeginChild("##PLOTWINDOW", ImVec2(ImGui::GetContentRegionAvail().x, ImGui::GetWindowHeight()), ImGuiWindowFlags_NoScrollbar);
+		ImGui::BeginChild("##PLOTWINDOW", ImVec2(ImGui::GetContentRegionAvail().x, ImGui::GetWindowHeight() - ImGui::GetFrameHeightWithSpacing()), ImGuiWindowFlags_NoScrollbar);
 		DrawPlots();
 		ImGui::EndChild(); 
+		Oak::UI::RenderMessageBoxes();
 		ImGui::End();
 	}
-	void PlotPanel::AddSeries(DataSeries<vk::Vec2>& _dataSeries)
-	{
-		OAK_TRACE_TAG("Plot::AddSeries", "Adding DataSeries {0} ('{1}')", _dataSeries.SeriesID, _dataSeries.Name.c_str());
-		if (m_DataSet.find(_dataSeries.SeriesID) != m_DataSet.end())
-		{
-			OAK_WARN_TAG("Plot::AddSeries", "........DataSeries {0} ('{1}') already exsists!", _dataSeries.SeriesID, _dataSeries.Name.c_str());
-			return;
-		}
-		auto series = Oak::Ref<DataSeries<vk::Vec2>>::Create(std::move(_dataSeries));
-		m_DataSet.emplace(series->SeriesID, std::move(series));
-	}
-
-
-	void PlotPanel::AddPlot()
-	{
-		struct PlotSettings settings = {};
-		settings.PlotID = Oak::UUID();
-		settings.Type = PlotType::REALTIME;
-		Oak::Ref<Plot> plot =  Oak::Ref<Plot>::Create(settings);
-		OAK_TRACE_TAG("PlotPanel::AddPlot", "Creating Plot {0} ('{1}') ...", plot->GetID(), plot->GetName());
-
-		for (auto& [_id, _series] : m_DataSet)
-		{
-			plot->AddSeries(_series);
-		}
-		m_Plots.push_back(plot);
-	}
-
-	void PlotPanel::UpdateData()
-	{
-
-	}
-
-	void PlotPanel::DrawPlots()
-	{
-		vk::f64_t t, y;
-		if (m_Running)
-		{
-			t = m_clock->poll();
-			y = m_SigGen->Generate(t);
-			for (auto& [_id, _series] : m_DataSet)
-			{
-				_series->AddPoint(vk::Vec2(t, y));
-			}
-		}	
-
-		float plot_height = (ImGui::GetWindowHeight() - ImGui::GetFrameHeightWithSpacing()) / (float)m_Plots.size();
-
-		for (auto& plot : m_Plots)
-		{
-			ImGui::BeginChild(std::string("##CHILD").append(plot->GetStrID()).c_str(), ImVec2(ImGui::GetContentRegionAvail().x, plot_height), ImGuiWindowFlags_NoScrollbar);
-			plot->GetSettings().RangeX = ImVec2(t - m_History, t);
-			plot->Draw();
-			ImGui::EndChild();
-		}
-	}
-
+	
 	void PlotPanel::DrawToolBar()
 	{
 		ImVec2 buttonSize = ImVec2(24, 24);
@@ -123,112 +88,269 @@ namespace Venturi
 		ImGui::BeginChild("##PLOTTOOLBAR", ImVec2(ImGui::GetContentRegionAvail().x, ImGui::GetFrameHeightWithSpacing()), ImGuiWindowFlags_NoScrollbar);
 
 		ImGui::SetCursorPosY(ImGui::GetFrameHeightWithSpacing() / 2.0f - buttonSize.y / 2.0f);
-		if (Oak::ImageButton(Resources::SettingsIcon, buttonSize))
+		if (Oak::UI::ImageButton(Resources::SettingsIcon, buttonSize))
 			m_ShowPlotOptions ^= true;
 
 		ImGui::SameLine();
-		if (Oak::ImageButton(Resources::PlusIcon, buttonSize))
+		if (Oak::UI::ImageButton(Resources::PlusIcon, buttonSize))
 		{
-			AddPlot();
+			UI_ShowPlotCreationPopUp();
 		}
 
 		buttonSize = ImVec2(16, 16);
-		ImGui::SameLine(ImGui::GetWindowContentRegionMax().x / 2.0f - 1.5f * buttonSize.x);
+		ImGui::SameLine(ImGui::GetWindowContentRegionMax().x / 2.0f -2.0f * buttonSize.x);
 		ImGui::SetCursorPosY(ImGui::GetFrameHeightWithSpacing() / 2.0f - buttonSize.y / 2.0f);
-		if (m_Running)
+		if (m_clock.IsRunning() && !m_clock.IsPaused())
 		{
-			if (Oak::ImageButton(Resources::PauseIcon, buttonSize))
+			if (Oak::UI::ImageButton(Resources::PauseIcon, buttonSize))
 			{
-				m_clock->pause();
-				m_Running = false;
+				m_clock.pause();
 			}
 		}
-		else
+		else 
 		{
-			if (Oak::ImageButton(Resources::PlayIcon, buttonSize))
+			if (Oak::UI::ImageButton(Resources::PlayIcon, buttonSize))
 			{
-				m_clock->resume();
-				m_Running = true;
+				if (!m_clock.IsRunning())
+				{
+					for (auto& [id, _series] : m_DataSet)
+						_series->Erase();
+				}
+
+				m_clock.start();
+				for (auto& [id, _series] : m_DataSet)
+				{	
+					Oak::Ref<SignalDataSeries> series = _series.As<SignalDataSeries>();
+					m_clock.tick(series->Signal.GetSpec().samplerate, series->buff, mutex);
+				}
 			}
 
 		}
 		ImGui::SameLine();
 		ImGui::SetCursorPosY(ImGui::GetFrameHeightWithSpacing() / 2.0f - buttonSize.y / 2.0f);
-		if (Oak::ImageButton(Resources::StopIcon, buttonSize))
-		{
-			m_clock->stop();
-			m_Running = false;
+		if (Oak::UI::ImageButton(Resources::StopIcon, buttonSize))
+		{	
+			m_clock.stop();
 		}
 		ImGui::SameLine();
 		ImGui::SetCursorPosY(ImGui::GetFrameHeightWithSpacing() / 2.0f - buttonSize.y / 2.0f);
-		if (m_Recording)
+		if (Oak::UI::ImageButton(Resources::RefreshIcon, buttonSize))
 		{
-			if (Oak::ImageButton(Resources::RecordingIcon, buttonSize))
+			m_clock.stop();
+			m_clock.start();
+			for (auto& [id, _series] : m_DataSet)
 			{
-				m_Recording = false;
+				Oak::Ref<SignalDataSeries> instance = _series.As<SignalDataSeries>();
+				instance->Erase();
+				//m_clock.tick(instance->Signal.GetSpec().samplerate, instance->Data);
+			}
+		}
+		ImGui::SameLine();
+		ImGui::SetCursorPosY(ImGui::GetFrameHeightWithSpacing() / 2.0f - buttonSize.y / 2.0f);
+		if (true) //todo add recording to file
+		{
+			if (Oak::UI::ImageButton(Resources::RecordingIcon, buttonSize))
+			{
 			}
 		}
 		else
 		{
-			if (Oak::ImageButton(Resources::RecordIcon, buttonSize))
+			if (Oak::UI::ImageButton(Resources::RecordIcon, buttonSize))
 			{
-				m_Recording = true;
 			}
 
 		}
 		ImGui::EndChild();
 	}
 	
+	void PlotPanel::DrawPlots()
+	{
+
+		float plot_height = (ImGui::GetWindowHeight() - ImGui::GetFrameHeightWithSpacing()) / (float)m_Plots.size();
+		for (auto& plot : m_Plots)
+		{
+			ImGui::BeginChild(std::string("##CHILD").append(plot->GetStrID()).c_str(), ImVec2(ImGui::GetContentRegionAvail().x, plot_height), ImGuiWindowFlags_NoScrollbar);
+			plot->GetSettings().RangeX = ImVec2(0,m_History);
+			plot->Draw();
+			ImGui::EndChild();
+		}
+	}
+
 	void PlotPanel::DrawPlotOptions()
 	{
 		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(5, 5));
-		ImGui::BeginChild("#PLOTOPTIONS", ImVec2(ImGui::GetContentRegionMax().x * 0.25f, ImGui::GetContentRegionAvail().y), ImGuiWindowFlags_AlwaysUseWindowPadding);
-		ImGui::InputFloat("Frequency", &m_freq, 1, 10.0 * M_PI, "%.1f PI (rad)");
-		m_SigGen->SetFrequency(m_freq * M_PI);
+		ImGui::BeginChild("#PLOTOPTIONS", ImVec2(ImGui::GetContentRegionMax().x * 0.15f, ImGui::GetContentRegionAvail().y), ImGuiWindowFlags_AlwaysUseWindowPadding);
+		
+		if (ImGui::BeginTabBar("##SETTINGSTABBAR"))
+		{
+			if (ImGui::BeginTabItem("Plot Settings"))
+			{
 
-		ImGui::InputFloat("History", &m_History, 1, 300, "%.1f s");
+				for (auto& plot : m_Plots)
+				{
+					std::string header = fmt::format("{0}##{1}", plot->GetSettings().Name, plot->GetID());
+					if (Oak::UI::PropertyGridHeader(header, false))
+					{
+						Oak::UI::PushID();
+						Oak::UI::BeginPropertyGrid();
+						Oak::UI::Property("Title", plot->GetSettings().Title, "Title", false);
+						Oak::UI::Property("x-axis label", plot->GetSettings().LabelX, "x-label", false);
+						Oak::UI::Property("y-axis label", plot->GetSettings().LabelY, "y-label", false);
+						glm::vec2 yrange = plot->GetSettings().RangeY;
+						if (Oak::UI::Property("y-axis range", yrange))
+							plot->GetSettings().RangeY = ImVec2(yrange);
 
-		ImGui::Combo("Waveform", &m_selectedWaveform, m_waveforms, IM_ARRAYSIZE(m_waveforms));
-		m_SigGen->SetWaveForm((vk::Signals::Waveform)m_selectedWaveform);
 
+						Oak::UI::PopID();
+						Oak::UI::EndPropertyGrid();
+						ImGui::TreePop();
+					}
+				}
+				ImGui::EndTabItem();
+			}
+			if (ImGui::BeginTabItem("Data Series Settings"))
+			{
+
+				for (auto& [id, _series] : m_DataSet)
+				{
+					auto series = _series.As<SignalDataSeries>();
+					std::string header = fmt::format("{0}##{1}", series->Name, series->SeriesID);
+					if (Oak::UI::PropertyGridHeader(header, false))
+					{
+						Oak::UI::PushID();
+						Oak::UI::BeginPropertyGrid();
+						Oak::UI::Property("Series Name", series->Name, false);
+						Oak::UI::BeginDisabled();
+						glm::vec2 data_size = glm::ivec2(series->x.size(), series->y.size());
+						Oak::UI::Property("Size", data_size);
+						Oak::UI::EndDisabled();
+						Oak::UI::Property("Frequency (Hz)", series->Signal.GetSpec().freq);
+						Oak::UI::Property("Phase", series->Signal.GetSpec().phi);
+						Oak::UI::Property("Amplitude", series->Signal.GetSpec().amp);
+						Oak::UI::Property("Offset", series->Signal.GetSpec().offset);
+						Oak::UI::Property("Sample Rate", series->Signal.GetSpec().samplerate);
+						Oak::UI::Property("Max Size", series->Buffersize);
+
+						int selectedWaveform = (int)series->Signal.GetSpec().waveform;
+						if (Oak::UI::PropertyDropdown("Waveform", vk::Signals::WaveformStrings, vk::Signals::_COUNT, &selectedWaveform))
+							series->Signal.SetWaveform((vk::Signals::Waveform)selectedWaveform);
+
+						if (ImGui::Button("Default"))
+							series->Signal.SetSpec(vk::Signals::SignalSpec());
+
+						Oak::UI::EndPropertyGrid();
+						Oak::UI::PopID();
+						ImGui::TreePop();
+					}
+				}
+
+				ImGui::EndTabItem();
+			}
+			
+			if (ImGui::BeginTabItem("Info"))
+			{
+				for (auto& plot : m_Plots)
+					ImGui::Text("Plot %d ('%s'): %d", plot->GetID(), plot->GetName().c_str(), plot->GetRefCount());
+
+				for (auto& [_id, _series] : m_DataSet)
+					ImGui::Text("DataSet %d ('%s'): %d", _series->SeriesID, _series->Name.c_str(), _series->GetRefCount());
+
+				ImGui::EndTabItem();
+			}
+			ImGui::EndTabBar();
+		}
 		
 
-		for (auto& plot : m_Plots)
-		{
-			ImGui::Separator();
-			ImGui::InputTextWithHint(std::string("##TITLE").append(plot->GetStrID()).c_str(), "Title", &plot->GetSettings().Title);
-			ImGui::InputTextWithHint(std::string("##XLABEL").append(plot->GetStrID()).c_str(), "x-label", &plot->GetSettings().LabelX);
-			ImGui::InputTextWithHint(std::string("##YLABEL").append(plot->GetStrID()).c_str(), "y-label", &plot->GetSettings().LabelY);
-
-		}
-
 		if (ImGui::Button("remove last plot"))
-			m_Plots.pop_back();
-
-		ImGui::Separator();
-		ImGui::Separator();
-		for (auto& plot : m_Plots)
-		{
-			ImGui::Text("Plot %d ('%s'): %d", plot->GetID(), plot->GetName().c_str(), plot->GetRefCount());
-
-		}
-
-		ImGui::Separator();
-		Oak::UUID to_remove;
-		for (auto& [_id, _series] : m_DataSet)
-		{
-			//ImGui::Text("DataSet %d ('%s'): %d", _series.SeriesID, _series.Name.c_str(), _series.GetRefCount());
-			ImGui::Text("DataSet %d ('%s'): %d", _series->SeriesID, _series->Name.c_str(), _series->GetRefCount());
-		}
-
-	
+			if (m_Plots.size() > 0)
+			{
+				m_Plots.pop_back();
+			}
 
 		ImGui::EndChild();
 		ImGui::PopStyleVar();
 	}
 
-	void PlotPanel::RemovePlot(Oak::UUID uuid)
+	void PlotPanel::AddPlot(PlotSpec& _settings)
 	{
 
+		Oak::Ref<Plot> plot = Oak::Ref<Plot>::Create(_settings);
+		OAK_TRACE_TAG("PlotPanel::AddPlot", "Creating Plot {0} ('{1}') ...", plot->GetID(), plot->GetName());
+
+		for (auto& [_id, _series] : m_DataSet)
+		{
+			plot->AddSeries(_series);
+		}
+		m_Plots.push_back(plot);
 	}
+	
+	void PlotPanel::CreatePlot()
+	{
+
+		ImVec2 center = ImGui::GetMainViewport()->GetCenter();
+		ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+		ImGui::SetNextWindowBgAlpha(0.8f);
+
+	}
+
+	void PlotPanel::RemovePlot(Oak::UUID& _uuid)
+	{
+		auto it = std::find_if(m_Plots.begin(), m_Plots.end(), [&](Oak::Ref<Plot> plot) {return plot->GetID() == _uuid; });
+		if (it != m_Plots.end())
+			m_Plots.erase(it);
+	}
+	
+	template<typename T>
+	void PlotPanel::AddSeries(T& _dataSeries)
+	{
+		static_assert(std::is_base_of<Oak::DataSeries<vk::f64_t>, T>::value, "PlotPanel::AddSeries requires TSeries to inherit from Oak::DataSeries");
+
+		OAK_TRACE_TAG("Plot::AddSeries", "Adding DataSeries {0} ('{1}')", _dataSeries.SeriesID, _dataSeries.Name.c_str());
+		if (m_DataSet.find(_dataSeries.SeriesID) != m_DataSet.end())
+		{
+			OAK_WARN_TAG("Plot::AddSeries", "........DataSeries {0} ('{1}') already exsists!", _dataSeries.SeriesID, _dataSeries.Name.c_str());
+			return;
+		}
+		auto series = Oak::Ref<T>::Create(std::move(_dataSeries));
+		m_DataSet.emplace(series->SeriesID, std::move(series));
+	}
+
+	void PlotPanel::CreateSeries()
+	{
+		// popup to select data series type
+		AddSeries<Oak::DataSeries<vk::f64_t>>(Oak::DataSeries<vk::f64_t>());
+	}
+	
+	void PlotPanel::RemoveSeries(Oak::UUID& _uuid)
+	{
+		m_DataSet.erase(_uuid);
+	}
+	
+	void PlotPanel::UI_ShowPlotCreationPopUp()
+	{
+		AddPlot(PlotSpec(Oak::UUID()));
+		
+		Oak::UI::ShowMessageBox("Create Plot", [&]()
+			{
+				auto& plot = m_Plots.back();
+			//PlotSettings settings = PlotSettings(Oak::UUID());
+				// this doesnt live ... maybe i need to make this a reference to settings, then implement the copy/move constructors for other cases where we create plot settings
+				ImGui::Text("Define Plot Properties");
+				ImGui::Separator();
+				ImGui::InputTextWithHint("##TITLE", "Enter plot title.. ", &plot->GetSettings().Title);
+				ImGui::InputTextWithHint("##XLABEL", "x-label.. ", &plot->GetSettings().LabelX);
+				ImGui::InputTextWithHint("##YLABEL", "y-label.. ", & plot->GetSettings().LabelY);
+				if (ImGui::Button("OK") || ImGui::IsKeyPressed(ImGuiKey_Enter) || ImGui::IsKeyPressed(ImGuiKey_KeyPadEnter))
+					ImGui::CloseCurrentPopup();
+				ImGui::SameLine();
+				if (ImGui::Button("Cancel") || ImGui::IsKeyPressed(ImGuiKey_Escape))
+				{
+					m_Plots.pop_back();
+					ImGui::CloseCurrentPopup();
+				}
+			}, 400);
+	}
+
+
+	
 }

@@ -19,6 +19,7 @@ namespace Venturi
 
         PlotPanel();
         ~PlotPanel();
+        
         void PushLocalStyle() override;
         void OnUIRender(const char* name, bool& open) override;
 
@@ -26,29 +27,31 @@ namespace Venturi
         void DrawPlots();
         void DrawPlotOptions();
 
+        void AddPlot(PlotSpec& _settings); 
+        void CreatePlot();
+        void RemovePlot(Oak::UUID& _uuid);
+        void CreateSeries();
+        void RemoveSeries(Oak::UUID& _uuid);
 
-        void AddPlot(); 
-        void RemovePlot(Oak::UUID uuid);
-        void CreatDataSeries();
-        void AddSeries(DataSeries<vk::Vec2>& _dataSeries);
-
-        void UpdateData();
+        void UI_ShowPlotCreationPopUp();
+        template<typename T>
+        void AddSeries(T& _dataSeries);
 
     private:
         uint32_t id; 
         inline static uint32_t m_idGenerator = 0;
         
-        Oak::Scope<vk::Clock> m_clock;
-        Oak::Scope<vk::Signals::SignalGenerator> m_SigGen;
+        vk::Clock m_clock {};
+        //Oak::Scope<vk::Clock> m_clock;
+        //Oak::Scope<vk::Signals::SignalGenerator> m_SigGen;
         
         std::vector<Oak::Ref<Plot>> m_Plots;
-        //std::map<Oak::UUID, DataSeries<vk::Vec2>> m_DataSet;
-        std::map<Oak::UUID, Oak::Ref<DataSeries<vk::Vec2>>> m_DataSet;
+        std::map<Oak::UUID, Oak::Ref<Oak::DataSeries<vk::f64_t>>> m_DataSet;
 
-
-        bool m_Running = false;
-        bool m_Recording = true;
         bool m_ShowPlotOptions = false;
+        bool m_CreatePlotPopup = false;
+        
+        // move all this somewhwer else
         float m_History = 30.0f;
         float m_freq = 2.0; // * M_PI
         static inline const char* const m_waveforms[] = { "RECTANGULAR", "SINE", "COSINE", "SQUARE", "SAWTOOTH", "RANDOM"};

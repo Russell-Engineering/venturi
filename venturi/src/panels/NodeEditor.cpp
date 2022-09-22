@@ -74,10 +74,10 @@ namespace Venturi
         ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0, 0, 0, 0));
         ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0, 0, 0, 0));
         //ImGui::SetCursorPosY(ImGui::GetFrameHeightWithSpacing() / 2.0f - buttonSize.y / 2.0f);
-        if (Oak::ImageButton(Resources::SettingsIcon, buttonSize))
+        if (Oak::UI::ImageButton(Resources::SettingsIcon, buttonSize))
         { }
         ImGui::SameLine();
-        if (Oak::ImageButton(Resources::PlusIcon, buttonSize))
+        if (Oak::UI::ImageButton(Resources::PlusIcon, buttonSize))
         {
         }
         ImGui::PopStyleColor(3);
