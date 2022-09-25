@@ -52,6 +52,7 @@ namespace Venturi
             ImPlot::SetupAxisLimits(ImAxis_Y1, m_Spec.RangeY[0], m_Spec.RangeY[1], m_Spec.AxisCondY);
             for (const auto& [_id, _series] : m_DataSet)
             {
+                ImPlot::SetNextLineStyle(_series->Color);
                 ImPlot::PlotLine(_series->Name.c_str(), &_series->x[0], &_series->y[0], _series->y.size(), 0, _series->Offset, sizeof(_series->y[0]));
                 //ImPlot::PlotLine(_series.Name.c_str(), &_series.Data[0].x, &_series.Data[0].y, _series.Data.size(), 0, _series.Offset, sizeof(_series.Data[0]));
 
@@ -86,11 +87,11 @@ namespace Venturi
         m_DataSet[_dataSeries->SeriesID] = _dataSeries;
     }
 
-    void Plot::RemoveSeries(Oak::UUID _seriesID)
+    void Plot::RemoveSeries(Oak::Ref<Oak::DataSeries<vk::f64_t>>& _dataSeries)
     {
-        if (m_DataSet.find(_seriesID) == m_DataSet.find(_seriesID))
+        if (m_DataSet.find(_dataSeries->SeriesID) == m_DataSet.end())
             return;
-        m_DataSet.erase(_seriesID);
+        m_DataSet.erase(_dataSeries->SeriesID);
     }
 
     void Plot::AddDataPoint(Oak::UUID _seriesID, vk::Vec2 _point)
@@ -129,7 +130,7 @@ namespace Venturi
         case PlotType::REALTIME:
         {
             // might have to rest flags every frame incase the plot type changes. 
-            m_Spec.AxisCondX = ImGuiCond_Always;
+            //m_Spec.AxisCondX = ImGuiCond_Always;
             break;
         }
         case PlotType::STATIC:

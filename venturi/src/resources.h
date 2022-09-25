@@ -20,6 +20,7 @@ namespace Venturi
         inline static Oak::Ref<Oak::Texture2D> ChartIcon = nullptr;
         inline static Oak::Ref<Oak::Texture2D> ConsoleIcon = nullptr;
         inline static Oak::Ref<Oak::Texture2D> AddPlotIcon = nullptr;
+        inline static Oak::Ref<Oak::Texture2D> ExportIcon = nullptr;
         inline static Oak::Ref<Oak::Texture2D> PlusIcon = nullptr;
         inline static Oak::Ref<Oak::Texture2D> SettingsIcon = nullptr;
 
@@ -50,6 +51,7 @@ namespace Venturi
             ChartIcon =     LoadTexture("assets/textures/icons8-combo-chart-32.png");
             ConsoleIcon =   LoadTexture("assets/textures/icons8-console-32.png");
             AddPlotIcon =   LoadTexture("assets/textures/icons8-add-new-32.png");
+            ExportIcon =   LoadTexture("assets/textures/icons8-export-32.png");
             PlusIcon =      LoadTexture("assets/textures/icons8-plus-math-32.png");
             SettingsIcon =  LoadTexture("assets/textures/icons8-services-32.png");
 
@@ -81,6 +83,7 @@ namespace Venturi
                 ChartIcon.Reset();
                 ConsoleIcon.Reset();
                 AddPlotIcon.Reset();
+                ExportIcon.Reset();
                 PlusIcon.Reset();
                 SettingsIcon.Reset();
                 RefreshIcon.Reset();

@@ -420,9 +420,9 @@ namespace Venturi
                 float size = ImGui::GetFrameHeight() - 2.0f * pad; // want the button to fill the frame so the image size is the frame height - 2x padding
                 ImGui::SetCursorPosX(0.0f);
                 ImGui::PushStyleColor(ImGuiCol_ButtonHovered, m_Style.Colors[ImGuiCol_MenuBarBg]);
-                Oak::UI::ImageButton(Resources::AppLogo, ImVec2(24, 16), pad);
+                //Oak::UI::ImageButton(Resources::AppLogo, ImVec2(24, 16), pad);
+                ImGui::ImageButton((ImTextureID)Resources::AppLogo->GetRendererID(), ImVec2(24, 16), ImVec2(0, 0), ImVec2(1, 1), pad);
                 ImGui::PopStyleColor();
-                //ImGui::ImageButton((ImTextureID)Resources::AppLogo->GetRendererID(), ImVec2(24, 16), ImVec2(0, 0), ImVec2(1, 1), pad);
 
                 if (ImGui::BeginMenu("FILE"))
                 {
@@ -588,7 +588,8 @@ namespace Venturi
                 ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f) - (size * 0.5f));
                 if (Oak::UI::ImageButton(Resources::AddPlotIcon, ImVec2(Resources::AddPlotIcon->GetWidth(), Resources::AddPlotIcon->GetHeight())))
                 {
-                    UI_ShowPlotCreationPopUp();
+                    //UI_ShowPlotCreationPopUp();
+                    m_PanelManager->AddPanel<PlotPanel>(Oak::PanelCategory::VIEW, PLOT_PANEL("2"), "PLOT-2", SHOW);
                     //AddPlot();
                 }
 
@@ -623,7 +624,9 @@ namespace Venturi
                 ImGui::Text("File: ");
                 //if (!m_CurrentWorkingFile.empty()) ImGui::Text(m_CurrentWorkingFile.c_str());
                 //else ImGui::Text("No file loaded ...");
-                std::string status_text = "Status: ";// +m_StatusStr;
+                const char* m_StatusString = "";
+                ImGuiIO& io = ImGui::GetIO();
+                std::string status_text = fmt::format("Status: {} ({:.1f} fps) ", m_StatusString, io.Framerate);// +m_StatusStr;
                 ImGui::SetCursorPosX(ImGui::GetCursorPosX() + ImGui::GetContentRegionAvail().x - ImGui::CalcTextSize(status_text.c_str()).x - 7.0f);
                 ImGui::Text(status_text.c_str());
 

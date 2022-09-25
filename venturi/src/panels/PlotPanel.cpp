@@ -12,21 +12,21 @@ namespace Venturi
 	{
 
 		vk::Signals::SignalSpec spec = { };
-		AddSeries<SignalDataSeries>(SignalDataSeries("Trace 1", 25000, spec));
+		AddSeries<SignalDataSeries>(SignalDataSeries("Trace 1", 10000, spec));
 
 		spec.amp = 1.5f;
 		spec.offset = 2.5f;
 		spec.waveform = vk::Signals::SQUARE;
-		AddSeries<SignalDataSeries>(SignalDataSeries("Trace 2", 25000, spec));
+		AddSeries<SignalDataSeries>(SignalDataSeries("Trace 2", 10000, spec));
 
 		spec.amp = 0.5f;
 		spec.offset = -2.0f;
 		spec.waveform = vk::Signals::TRIANGLE;
-		AddSeries<SignalDataSeries>(SignalDataSeries("Trace 3", 25000, spec));	spec.amp = 0.5f;
+		AddSeries<SignalDataSeries>(SignalDataSeries("Trace 3", 10000, spec));	spec.amp = 0.5f;
 
 		spec.offset = 0.0f;
 		spec.waveform = vk::Signals::RANDOM;
-		AddSeries<SignalDataSeries>(SignalDataSeries("Trace 4", 25000, spec));
+		AddSeries<SignalDataSeries>(SignalDataSeries("Trace 4", 10000, spec));
 	}
 
 	PlotPanel::~PlotPanel()
@@ -51,6 +51,7 @@ namespace Venturi
 		ImGui::PushStyleColor(ImGuiCol_ButtonActive, style.Colors[ImGuiCol_WindowBg]); m_ColorPopCount++;
 		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(5, 0)); m_StylePopCount++;
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(5, 0)); m_StylePopCount++;
+		ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding,0.0f); m_StylePopCount++;
 
 	}
 
@@ -137,12 +138,17 @@ namespace Venturi
 		if (Oak::UI::ImageButton(Resources::RefreshIcon, buttonSize))
 		{
 			m_clock.stop();
-			m_clock.start();
 			for (auto& [id, _series] : m_DataSet)
 			{
 				Oak::Ref<SignalDataSeries> instance = _series.As<SignalDataSeries>();
 				instance->Erase();
 				//m_clock.tick(instance->Signal.GetSpec().samplerate, instance->Data);
+			}
+			m_clock.start();
+			for (auto& [id, _series] : m_DataSet)
+			{
+				Oak::Ref<SignalDataSeries> series = _series.As<SignalDataSeries>();
+				m_clock.tick(series->Signal.GetSpec().samplerate, series->buff, mutex);
 			}
 		}
 		ImGui::SameLine();
@@ -179,12 +185,13 @@ namespace Venturi
 	void PlotPanel::DrawPlotOptions()
 	{
 		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(5, 5));
-		ImGui::BeginChild("#PLOTOPTIONS", ImVec2(ImGui::GetContentRegionMax().x * 0.15f, ImGui::GetContentRegionAvail().y), ImGuiWindowFlags_AlwaysUseWindowPadding);
+		ImGui::BeginChild("#OPTIONSTABBAR", ImVec2(ImGui::GetContentRegionMax().x * 0.15f, ImGui::GetContentRegionAvail().y), ImGuiWindowFlags_AlwaysUseWindowPadding | ImGuiWindowFlags_NoScrollbar);
 		
 		if (ImGui::BeginTabBar("##SETTINGSTABBAR"))
 		{
 			if (ImGui::BeginTabItem("Plot Settings"))
 			{
+				ImGui::BeginChild("#PLOTSETTINGS", ImVec2(ImGui::GetContentRegionMax().x, ImGui::GetContentRegionAvail().y), ImGuiWindowFlags_AlwaysUseWindowPadding);
 
 				for (auto& plot : m_Plots)
 				{
@@ -196,9 +203,26 @@ namespace Venturi
 						Oak::UI::Property("Title", plot->GetSettings().Title, "Title", false);
 						Oak::UI::Property("x-axis label", plot->GetSettings().LabelX, "x-label", false);
 						Oak::UI::Property("y-axis label", plot->GetSettings().LabelY, "y-label", false);
-						glm::vec2 yrange = plot->GetSettings().RangeY;
-						if (Oak::UI::Property("y-axis range", yrange))
-							plot->GetSettings().RangeY = ImVec2(yrange);
+						Oak::UI::BeginCheckboxGroup("Data Series");
+						std::string subheader = fmt::format("{0}##{1}", "Select Data", plot->GetID());
+						if (Oak::UI::PropertyGridHeader(subheader, false))
+						{
+							for (auto& [id, series] : m_DataSet)
+							{
+								if (Oak::UI::PropertyCheckboxColorGroup(series->Name.c_str(), plot->GetSettings().IncludeData[id], series->Color))
+								{
+									if (plot->GetSettings().IncludeData[id]) plot->AddSeries(series);
+									else plot->RemoveSeries(series);
+								}
+							}
+							ImGui::TreePop();
+						}
+						Oak::UI::EndCheckboxGroup();
+						//ImGui::NextColumn();
+						int selectedPlotTye = (int)plot->GetSettings().Type;
+						if (Oak::UI::PropertyDropdown("Plot Type", PlotTypeStrings, PlotType::_COUNT, &selectedPlotTye))
+							plot->GetSettings().Type = (PlotType)selectedPlotTye;
+
 
 
 						Oak::UI::PopID();
@@ -206,30 +230,33 @@ namespace Venturi
 						ImGui::TreePop();
 					}
 				}
+				ImGui::EndChild();
 				ImGui::EndTabItem();
 			}
-			if (ImGui::BeginTabItem("Data Series Settings"))
+			if (ImGui::BeginTabItem("Series Settings"))
 			{
 
+				ImGui::BeginChild("#SERIESSETTINGS", ImVec2(ImGui::GetContentRegionMax().x, ImGui::GetContentRegionAvail().y), ImGuiWindowFlags_AlwaysUseWindowPadding);
 				for (auto& [id, _series] : m_DataSet)
 				{
 					auto series = _series.As<SignalDataSeries>();
-					std::string header = fmt::format("{0}##{1}", series->Name, series->SeriesID);
+					std::string header = fmt::format("Data Series {0}", series->SeriesID);
 					if (Oak::UI::PropertyGridHeader(header, false))
 					{
 						Oak::UI::PushID();
 						Oak::UI::BeginPropertyGrid();
-						Oak::UI::Property("Series Name", series->Name, false);
+						Oak::UI::Property("Series Name", series->Name, "Series Name", false);
 						Oak::UI::BeginDisabled();
-						glm::vec2 data_size = glm::ivec2(series->x.size(), series->y.size());
+						glm::uvec2 data_size = glm::uvec2(series->x.size(), series->y.size());
 						Oak::UI::Property("Size", data_size);
 						Oak::UI::EndDisabled();
+						Oak::UI::Property("Max Size", series->Buffersize);
 						Oak::UI::Property("Frequency (Hz)", series->Signal.GetSpec().freq);
-						Oak::UI::Property("Phase", series->Signal.GetSpec().phi);
+						Oak::UI::Property("Sample Rate", series->Signal.GetSpec().samplerate);
 						Oak::UI::Property("Amplitude", series->Signal.GetSpec().amp);
 						Oak::UI::Property("Offset", series->Signal.GetSpec().offset);
-						Oak::UI::Property("Sample Rate", series->Signal.GetSpec().samplerate);
-						Oak::UI::Property("Max Size", series->Buffersize);
+						Oak::UI::Property("Phase", series->Signal.GetSpec().phi);
+						Oak::UI::PropertyColor("Line Color", series->Color);
 
 						int selectedWaveform = (int)series->Signal.GetSpec().waveform;
 						if (Oak::UI::PropertyDropdown("Waveform", vk::Signals::WaveformStrings, vk::Signals::_COUNT, &selectedWaveform))
@@ -244,6 +271,7 @@ namespace Venturi
 					}
 				}
 
+				ImGui::EndChild();
 				ImGui::EndTabItem();
 			}
 			
@@ -259,13 +287,6 @@ namespace Venturi
 			}
 			ImGui::EndTabBar();
 		}
-		
-
-		if (ImGui::Button("remove last plot"))
-			if (m_Plots.size() > 0)
-			{
-				m_Plots.pop_back();
-			}
 
 		ImGui::EndChild();
 		ImGui::PopStyleVar();
@@ -279,7 +300,7 @@ namespace Venturi
 
 		for (auto& [_id, _series] : m_DataSet)
 		{
-			plot->AddSeries(_series);
+			plot->GetSettings().IncludeData[_id] = false;
 		}
 		m_Plots.push_back(plot);
 	}
