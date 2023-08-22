@@ -3,7 +3,7 @@
 
 #include "resources.h"
 
-namespace Venturi
+namespace wi::Venturi
 {
 	struct DirectoryTreeItem
 	{
@@ -57,7 +57,7 @@ namespace Venturi
 
 	{
 
-		const std::string& directoryPath = Oak::Application::Get().GetSpecification().workingDirectory;
+		const std::string& directoryPath = Oak::Application::Get().GetSpecification().WorkingDirectory;
 
 		ImGui::Begin(name, &open);
 
@@ -67,15 +67,15 @@ namespace Venturi
 		bool hovered = ImGui::IsWindowHovered() || ImGui::IsWindowFocused();
 		ImGui::SameLine();
 		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1, 1, 1, 0.5f));
-		ImGui::Text(" %s\\", Oak::Application::Get().GetSpecification().workingDirectory.c_str());
+		ImGui::Text(" %s\\", Oak::Application::Get().GetSpecification().WorkingDirectory.c_str());
 		ImGui::PopStyleColor();
 		if (hovered)
 		{
 			int pad = 2;
 			float size = ImGui::GetFrameHeight() - 2.0f * pad;
 			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0.0f, 0.0f));
-			ImGui::SameLine(ImGui::GetContentRegionAvail().x - 3.0*(size+2*pad));
-			ImGui::BeginChild("##REFRESH_EXPLORER", ImVec2(3.0*(size+2.0*pad), (size+2.0*pad)));
+			ImGui::SameLine(ImGui::GetContentRegionAvail().x - 3.0f*(size+2.0f*pad));
+			ImGui::BeginChild("##REFRESH_EXPLORER", ImVec2(3.0f*(size+2.0f*pad), (size+2.0f*pad)));
 			ImGui::ImageButton((ImTextureID)Resources::RefreshIcon->GetRendererID(), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), pad);
 		
 			if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))

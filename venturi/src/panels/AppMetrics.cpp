@@ -1,7 +1,7 @@
 #include "panels/AppMetrics.h"
 #include "ImGui/imgui_demo.cpp"
 
-namespace Venturi
+namespace wi::Venturi
 {
     void AppMetrics::PushLocalStyle()
     {

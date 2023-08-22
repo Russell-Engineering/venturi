@@ -20,3 +20,6 @@
 [submodule "vk"]
 	path = vk
 	url = https://github.com/csooriyakumaran/vk
+[submodule "wi"]
+	path = wi
+	url = https://github.com/csooriyakumaran/wi

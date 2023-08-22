@@ -3,7 +3,7 @@
 #include "nodes.h"
 #include "resources.h"
 
-namespace Venturi
+namespace wi::Venturi
 {
 
     NodeEditor::NodeEditor()

@@ -3,7 +3,7 @@
 #include "oak.h"
 
 
-namespace Venturi
+namespace wi::Venturi
 {
     class DemoPanels : public Oak::Panel
     {

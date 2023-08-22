@@ -2,7 +2,7 @@
 
 #include "oak.h"
 
-namespace Venturi
+namespace wi::Venturi
 {
     class NodeEditor : public Oak::Panel
     {

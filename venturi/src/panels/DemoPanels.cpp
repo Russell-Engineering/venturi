@@ -3,7 +3,7 @@
 #include "ImGui/imgui.h"
 #include "implot/implot.h"
 
-namespace Venturi
+namespace wi::Venturi
 {
 
     void DemoPanels::PushLocalStyle()

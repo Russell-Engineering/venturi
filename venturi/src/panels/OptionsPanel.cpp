@@ -1,7 +1,7 @@
 #include "panels/OptionsPanel.h"
 #include "imgui/imgui.h"
 
-namespace Venturi
+namespace wi::Venturi
 {
  
     void OptionsPanel::PushLocalStyle()
@@ -31,7 +31,7 @@ namespace Venturi
                 //    {   
                 //        std::string name = panel->GetName();
                 //        uint32_t id = panel->GetID();
-                //        OAK_WARN("Panel {}:{}", id, name);
+                //        LOG_WARN("Panel {}:{}", id, name);
                 //        bool is_selected = (current_item == name.c_str());
                 //        if (ImGui::Selectable(name.c_str(), is_selected))
                 //            current_item = name.c_str();

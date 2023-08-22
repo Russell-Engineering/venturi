@@ -1,7 +1,7 @@
 #include "panels/AboutPanel.h"
 #include "ImGui/imgui.h"
 
-namespace Venturi
+namespace wi::Venturi
 {
     void AboutPanel::PushLocalStyle()
     {

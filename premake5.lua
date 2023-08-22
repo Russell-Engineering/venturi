@@ -6,6 +6,7 @@ workspace "venturi"
     
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
+include "wi/wiExternal.lua"
 include "vk/vkExternal.lua"
 include "oak/oakExternal.lua"
 include "venturi"

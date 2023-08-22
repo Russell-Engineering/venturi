@@ -2,7 +2,7 @@
 
 #include "oak.h"
 
-namespace Venturi
+namespace wi::Venturi
 {
     class AppMetrics : public Oak::Panel
     {

@@ -2,7 +2,7 @@
 
 #include "oak.h"
 
-namespace Venturi
+namespace wi::Venturi
 {
 
     class AboutPanel : public Oak::Panel

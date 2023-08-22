@@ -16,8 +16,12 @@ project "venturi"
     includedirs
     {  
         "src", 
+        "../wi/wi/src",
+        "../wi/wi/include",
         "../vk/vk/src",
+        "../vk/vk/include",
         "../oak/oak/src",
+        "../oak/oak/include",
         "../oak/vendor",
         "../oak/vendor/implot",
         "../oak/vendor/imgui",
@@ -31,29 +35,31 @@ project "venturi"
 
     links
     {
+        "wi",
         "vk",
         "oak",
     }
     
     defines
     {
-        "_USE_MATH_DEFINES"
+        "_USE_MATH_DEFINES",
+        "_CRT_SECURE_NO_WARNINGS",
+        "_CRT_NONSTDC_NO_DEPRECATE",
     }
 
 
     filter "system:windows"
         systemversion "latest"
-        defines "OAK_PLATFORM_WINDOWS"
+        defines "WI_PLATFORM_WINDOWS"
 
     filter  "configurations:Debug" 
-        defines "OAK_DEBUG"
+        defines { "WI_DEBUG" }
         symbols "On"
 
     filter  "configurations:Release"
-        defines "OAK_RELEASE"
+        defines { "WI_RELEASE" }
         optimize "On"
-        
+
     filter  "configurations:Dist"
-        kind "WindowedApp"    
-        defines "OAK_DIST"
+        defines { "WI_DIST" }
         optimize "On"

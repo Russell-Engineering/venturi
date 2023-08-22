@@ -1,7 +1,7 @@
 #include "nodes/SampleNode.h"
 #include "imnodes/imnodes.h"
 
-namespace Venturi
+namespace wi::Venturi
 {
     SampleNode::SampleNode(bool open)
         : Oak::Node(open)
@@ -12,7 +12,7 @@ namespace Venturi
 
     void SampleNode::OnUIRender(bool* p_open)
     {
-        ImNodes::BeginNode(GetID());
+        ImNodes::BeginNode((int)GetID());
 
         ImNodes::BeginNodeTitleBar();
         ImGui::TextUnformatted("output node");
